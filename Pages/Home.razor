@@ -4,7 +4,7 @@
     private double durationSeconds = 3;
     private double delaySeconds = 1;
     private Dictionary<string, object> props = new Dictionary<string, object>();
-    private string epostJpg = "/path/to/epost.jpg"; // Example path, replace with your actual path
+    private string epostJpg = "/images/mail.png";
 }
 
 @using BlazorClient.Components
@@ -43,7 +43,7 @@
                       <div id="divDownload" style={{ minHeight: '50px' }}>
                         <p>
                           <a href="/Handler/Download/0/M">
-                            <img src="./content/images/button-download.gif" alt="download photo" />
+                            <img src="/images/button-download.gif" alt="download photo" />
                           </a>
                         </p>
                         <hr />
@@ -90,48 +90,77 @@
                 <h4 />
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <div class="panel panel-primary">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Welcome to Gunnar Siréus' ReactJS Single Page Application</h3>
+            <div className="row">
+              <div className="col-md-12">
+                <div className="panel panel-primary">
+                  <div className="panel-heading">
+                    <h3 className="panel-title">Panel 1</h3>
                   </div>
-                  <div class="panel-body">
-                    <h4 style={{ color: "Turquoise" }}>
-                      <center>Runs in a docker container on <a href="https://azure.microsoft.com/en-us">Azure</a></center>
-                    </h4>
-                    <br />
-                    As a professional, I am dedicated to creating value for customers. Collaboration with colleagues and taking responsibility for the group's work and the success of projects is the most important thing for me. In other words, being professional. This page is both my personal website and the website for Siréus Consulting AB. It is also a platform for implementing ReactJS code. In the latest update, I introduced the ability for a logged-in user to add photographs to a photo album with Drag & Drop. The origin comes from a Starter Kit from Microsoft written in WebForms/VB and released in 2005. In 2011, the site was converted to C# MVC and during 2016-2017 it was rewritten to .Net Core and ReactJS. My focus has always been on testing new technologies with an emphasis on speed and responsiveness. The layout is essentially the same as in 2005, but the original CSS code has been replaced with Bootstrap. Some .jpg and .gif files remain from 2005. The site is updated quite rarely; the changes made are mostly things that are not visible, such as upgrading to the latest version of ReactJS and Webpack and rewriting code.
-                    <br />
-                    <br />
-                    <img src="./content/images/MCTS.jpg" alt="Logo" class="center-block" />
-                    <br />
-                    <div>
-                      <center>Don't hesitate to contact me at <img src={epostJpg} alt="epost" /></center>
-                    </div>
+                  <div className="panel-body">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Maecenas euismod orci velit, id tincidunt massa mollis ac.
+                    Aliquam volutpat facilisis lacinia. Aenean auctor justo non
+                    faucibus efficitur. Sed mollis, orci faucibus suscipit
+                    pellentesque, nunc augue blandit ante, eget gravida ex erat
+                    sed lectus. Mauris eu congue lacus, gravida aliquam ligula.
+                    Aenean in diam eget mi tincidunt iaculis. Sed ac mi velit.
+                    Nam vestibulum, metus id auctor bibendum, purus mi congue
+                    urna, vitae maximus nibh orci eu orci. Donec viverra nisl
+                    diam, pellentesque tincidunt risus hendrerit nec. Nulla at
+                    magna dui. Mauris nec tristique enim. Ut a feugiat odio.
+                    Nullam efficitur bibendum lorem. Curabitur pharetra risus
+                    neque, a molestie quam ultrices at. Etiam molestie libero
+                    odio. Suspendisse volutpat, justo vitae varius facilisis,
+                    quam ex placerat orci, sit amet cursus ante mi et purus.
+                    Vivamus dolor sem, suscipit ut nisl id, malesuada commodo
+                    metus. Ut at orci non arcu ornare fringilla pharetra non
+                    nunc. Suspendisse arcu odio, commodo nec porta et, viverra
+                    et arcu. Nullam nec lacinia velit. Pellentesque commodo
+                    fringilla est, sed ullamcorper risus vestibulum vitae. Nunc
+                    facilisis, eros vitae rhoncus consectetur, velit magna
+                    interdum felis, quis convallis arcu nisl a lorem. Proin
+                    gravida, elit non volutpat maximus, urna purus commodo ante,
+                    quis viverra lectus urna eget nisi.
                   </div>
                 </div>
               </div>
-              <div class="col-md-12">
-                <div class="panel panel-primary">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">Dimensioning of Life Time Buy stock level.</h3>
+              <div className="col-md-12">
+                <div className="panel panel-primary">
+                  <div className="panel-heading">
+                    <h3 className="panel-title">Panel 2</h3>
                   </div>
-                  <div class="panel-body">
-                    A search on the internet shows that there are many papers published that describe the LTB problem. As a reference, and as an example among many others, the following paper is referred to:
-                    <ul>
-                      <li>
-                        <a href={finalOrderProblem}>The Final Order Problem for Repairable Spare Parts under condemnation</a>
-                      </li>
-                    </ul>
-                    <p>
-                      In short, the problem involves calculating how many spare parts need to be stored to fulfill warranty commitments. This issue arises for, for example, aircraft manufacturers and telecom equipment suppliers.
-
-                      Imagine an aircraft manufacturer that has sold tens of thousands of airplanes of a certain model with, let's say, a 30-year warranty. As long as the replaceable components used in the airplanes are still being manufactured, spare parts can be ordered directly from the factory. However, at some point, the production of a particular component will cease. Due to the large number of airplanes in operation, there will be a need for the component throughout the warranty period.
-
-                      In many cases, it is possible to repair broken parts, and the repaired parts can be reused as spare parts. However, not all parts can be repaired, with repair losses being around 30%, for example. This means that only 70% of the parts sent for repair can be reused as spare parts after repair. As long as the repair shops have the knowledge and equipment necessary for repairs, the need to store the part as a spare is less. At some point, it is no longer profitable to keep the repair operations running, and the remaining need for the component must then be covered by storing it in a spare parts inventory.
-                      On page <NavLink to="/ltb">LTB</NavLink>, you have the opportunity to try the sizing of an LTB bearing yourself.
-                    </p>
+                  <div className="panel-body">
+                    Phasellus diam dolor, molestie quis arcu nec, fermentum
+                    lobortis ante. Nunc sagittis condimentum felis sit amet
+                    ultrices. Donec aliquam dolor sit amet tempor elementum.
+                    Proin auctor justo mi, quis consectetur tortor molestie at.
+                    Sed aliquet odio turpis, at efficitur justo egestas quis.
+                    Duis facilisis dui arcu, sit amet ullamcorper lacus
+                    tristique id. Donec euismod arcu urna, sed pellentesque nibh
+                    ornare et. Duis sed imperdiet neque. Morbi fermentum
+                    scelerisque quam non luctus. Vestibulum vehicula
+                    sollicitudin nibh, quis hendrerit massa ullamcorper a.
+                    Quisque posuere euismod elit, nec rutrum tellus pellentesque
+                    in. Nulla facilisi. Donec fringilla, neque ac vulputate
+                    rutrum, nisl tortor facilisis urna, ac cursus urna nibh
+                    vitae odio. Nunc lorem dui, consequat nec ex eget, lobortis
+                    pharetra nibh. Nunc pretium odio nisl, vel gravida urna
+                    tristique at. Mauris ut nibh quis lorem vulputate
+                    ullamcorper. Quisque condimentum purus vitae massa
+                    porttitor, in feugiat elit blandit. Praesent lectus tortor,
+                    molestie nec libero vitae, aliquam aliquam sapien. Quisque
+                    blandit iaculis mauris eu feugiat. Aenean eget diam quis
+                    elit pretium vestibulum. Donec velit sapien, commodo eu
+                    posuere et, commodo sit amet purus. Aliquam erat volutpat.
+                    Maecenas non hendrerit ligula, quis feugiat risus. Morbi et
+                    efficitur mauris. Curabitur ut bibendum elit. Pellentesque
+                    sit amet cursus nunc. Donec rhoncus et dui at tempus.
+                    Vestibulum et nibh pulvinar nibh bibendum bibendum non
+                    finibus velit. Maecenas non odio ultrices, dignissim odio
+                    id, ullamcorper tortor. Curabitur lacinia arcu et malesuada
+                    sollicitudin. Integer sed cursus felis. Aenean porta, tortor
+                    vel aliquet tempor, neque lectus euismod dolor, non dapibus
+                    ligula nisl ut nisl.
                   </div>
                 </div>
               </div>

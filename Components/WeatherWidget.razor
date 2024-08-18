@@ -1,0 +1,19 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+<WidgetFrame>
+    <div class="row">
+        <div id="c_420cee0ee12535cd2a922993c70ebd2e" class="center-block widget"></div>
+    </div>
+</WidgetFrame>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load the script dynamically
+            await JSRuntime.InvokeVoidAsync("loadScript", "https://www.klart.se/widget/widget_loader/420cee0ee12535cd2a922993c70ebd2e");
+        }
+    }
+}

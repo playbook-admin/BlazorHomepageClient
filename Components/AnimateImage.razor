@@ -1,0 +1,47 @@
+﻿@code {
+    [Parameter] public bool Play { get; set; }
+    [Parameter] public long Rand { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; } 
+}
+
+<Animate Play="Play" DurationSeconds="3">
+    <AnimateKeyframes
+        Play="Play"
+        IterationCount="10"
+        DurationSeconds="0.2"
+        Keyframes="@(new[]
+        {
+            "transform: rotate(0)",
+            "transform: rotate(360deg)"
+        })">
+        <AnimateKeyframes
+            Play="Play"
+            IterationCount="1"
+            Direction="alternate"
+            DurationSeconds="2"
+            Keyframes="@(new[]
+            {
+                "transform: scaleX(0.05) scaleY(0.05)",
+                "transform: scaleX(0.1) scaleY(0.1)",
+                "transform: scaleX(0.15) scaleY(0.15)",
+                "transform: scaleX(0.2) scaleY(0.2)",
+                "transform: scaleX(0.25) scaleY(0.25)",
+                "transform: scaleX(0.3) scaleY(0.3)",
+                "transform: scaleX(0.35) scaleY(0.35)",
+                "transform: scaleX(0.4) scaleY(0.4)",
+                "transform: scaleX(0.45) scaleY(0.45)",
+                "transform: scaleX(0.5) scaleY(0.5)",
+                "transform: scaleX(0.55) scaleY(0.55)",
+                "transform: scaleX(0.6) scaleY(0.6)",
+                "transform: scaleX(0.65) scaleY(0.65)",
+                "transform: scaleX(0.7) scaleY(0.7)",
+                "transform: scaleX(0.75) scaleY(0.75)",
+                "transform: scaleX(0.8) scaleY(0.8)",
+                "transform: scaleX(0.85) scaleY(0.85)",
+                "transform: scaleX(0.9) scaleY(0.9)",
+                "transform: scaleX(1) scaleY(1)"
+            })">
+            @ChildContent
+        </AnimateKeyframes>
+    </AnimateKeyframes>
+</Animate>

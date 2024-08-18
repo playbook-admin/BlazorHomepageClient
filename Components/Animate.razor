@@ -1,0 +1,14 @@
+﻿@code {
+    [Parameter] public bool Play { get; set; }
+    [Parameter] public double DurationSeconds { get; set; }
+    [Parameter] public double DelaySeconds { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public Dictionary<string, object>? Props { get; set; }
+}
+
+<div class="animate-container"
+     style="animation-play-state: @(Play ? "running" : "paused");
+            animation-duration: @(DurationSeconds + "s");
+            animation-delay: @(DelaySeconds + "s");">
+    @ChildContent
+</div>

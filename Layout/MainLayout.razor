@@ -1,0 +1,20 @@
+﻿@inherits LayoutComponentBase
+@namespace BlazorClient.Shared
+
+<!-- Main layout structure -->
+<div class="main-layout">
+    <header>
+        <!-- You can put your header or navigation bar here -->
+        <NavMenu />
+    </header>
+    <main>
+        @Body
+    </main>
+    <footer>
+        <@FooterContent />
+    </footer>
+</div>
+
+@code {
+    // Any additional logic from Frame.razor can go here
+}

@@ -1,0 +1,143 @@
+﻿@page "/"
+@code {
+    private bool play = true;
+    private double durationSeconds = 3;
+    private double delaySeconds = 1;
+    private Dictionary<string, object> props = new Dictionary<string, object>();
+    private string epostJpg = "/path/to/epost.jpg"; // Example path, replace with your actual path
+}
+
+@using BlazorClient.Components
+
+    <div class="container">
+      <div class="row">
+        <div class="row-height">
+          <div class="col-md-3 hidden-md hidden-sm hidden-xs col-md-height col-md-top custom-vertical-left-border custom-vertical-right-border grey-background">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel panel-primary center-block">
+                  <div class="panel-heading text-center">
+                    <h3 class="panel-title">Today's photo</h3>
+                  </div>
+                  <div class="panel-body">
+                    <div class="row text-center">
+                      <div class="col-md-12" id="divSwirl">
+                        <AnimateImage Play="true" Rand="@(DateTime.Now.Ticks)">
+                          <PhotoFrame>
+                            <a href="/api/details/0/0/-?@(DateTime.Now.Ticks)">
+                              <img src="/Handler/Index/PhotoID=0/Size=M?@(DateTime.Now.Ticks)" alt="Animated Image" 
+                                    style="border: 4px solid white; max-height: 100%; max-width: 100%; vertical-align: middle;" />
+                            </a>
+                          </PhotoFrame>
+                        </AnimateImage>
+                      </div>
+                    </div>
+                    <div class="row text-center">
+                      <hr />
+                      <div id="divText" style={{ minHeight: '60px' }}>Photos taken by employees at p&#229; Sir&#233;us Consulting AB.</div>
+                      <div id="divDownload" style={{ minHeight: '50px' }}>
+                        <p>
+                          <a href="/Handler/Download/0/M">
+                            <img src="./content/images/button-download.gif" alt="download photo" />
+                          </a>
+                        </p>
+                        <hr />
+                        <p>
+                          See <NavLink to="/albums">more photos</NavLink>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="divContact" style={{ minHeight: '90px' }}>
+                  <Animate Play="play" DurationSeconds="durationSeconds" DelaySeconds="delaySeconds" Props="props">
+                      <h4>Contact information</h4>
+                      <p>
+                          &nbsp;&nbsp;<span class="glyphicon glyphicon-phone-alt" style="color: gray;"></span>&nbsp;0708-940 567
+                      </p>
+                      <p>
+                          <img src="@epostJpg" alt="epost" class="img-responsive" />
+                      </p>
+                  </Animate>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="panel panel-primary">
+                      <div class="panel-heading">
+                        <h3 class="panel-title text-center">Today's weather</h3>
+                      </div>
+                      <div class="panel-body panel-height_small">
+                        <div id="divWeather" style={{ verticalAlign: "textTop" }}>
+                          <Animate Play="play" DurationSeconds="3" DelaySeconds="2.1" Props="props">
+                            <WeatherWidget />
+                          </Animate>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-9 col-md-height">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="panel panel-primary">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Welcome to Gunnar Siréus' ReactJS Single Page Application</h3>
+                  </div>
+                  <div class="panel-body">
+                    <h4 style={{ color: "Turquoise" }}>
+                      <center>Runs in a docker container on <a href="https://azure.microsoft.com/en-us">Azure</a></center>
+                    </h4>
+                    <br />
+                    As a professional, I am dedicated to creating value for customers. Collaboration with colleagues and taking responsibility for the group's work and the success of projects is the most important thing for me. In other words, being professional. This page is both my personal website and the website for Siréus Consulting AB. It is also a platform for implementing ReactJS code. In the latest update, I introduced the ability for a logged-in user to add photographs to a photo album with Drag & Drop. The origin comes from a Starter Kit from Microsoft written in WebForms/VB and released in 2005. In 2011, the site was converted to C# MVC and during 2016-2017 it was rewritten to .Net Core and ReactJS. My focus has always been on testing new technologies with an emphasis on speed and responsiveness. The layout is essentially the same as in 2005, but the original CSS code has been replaced with Bootstrap. Some .jpg and .gif files remain from 2005. The site is updated quite rarely; the changes made are mostly things that are not visible, such as upgrading to the latest version of ReactJS and Webpack and rewriting code.
+                    <br />
+                    <br />
+                    <img src="./content/images/MCTS.jpg" alt="Logo" class="center-block" />
+                    <br />
+                    <div>
+                      <center>Don't hesitate to contact me at <img src={epostJpg} alt="epost" /></center>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="panel panel-primary">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Dimensioning of Life Time Buy stock level.</h3>
+                  </div>
+                  <div class="panel-body">
+                    A search on the internet shows that there are many papers published that describe the LTB problem. As a reference, and as an example among many others, the following paper is referred to:
+                    <ul>
+                      <li>
+                        <a href={finalOrderProblem}>The Final Order Problem for Repairable Spare Parts under condemnation</a>
+                      </li>
+                    </ul>
+                    <p>
+                      In short, the problem involves calculating how many spare parts need to be stored to fulfill warranty commitments. This issue arises for, for example, aircraft manufacturers and telecom equipment suppliers.
+
+                      Imagine an aircraft manufacturer that has sold tens of thousands of airplanes of a certain model with, let's say, a 30-year warranty. As long as the replaceable components used in the airplanes are still being manufactured, spare parts can be ordered directly from the factory. However, at some point, the production of a particular component will cease. Due to the large number of airplanes in operation, there will be a need for the component throughout the warranty period.
+
+                      In many cases, it is possible to repair broken parts, and the repaired parts can be reused as spare parts. However, not all parts can be repaired, with repair losses being around 30%, for example. This means that only 70% of the parts sent for repair can be reused as spare parts after repair. As long as the repair shops have the knowledge and equipment necessary for repairs, the need to store the part as a spare is less. At some point, it is no longer profitable to keep the repair operations running, and the remaining need for the component must then be covered by storing it in a spare parts inventory.
+                      On page <NavLink to="/ltb">LTB</NavLink>, you have the opportunity to try the sizing of an LTB bearing yourself.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+

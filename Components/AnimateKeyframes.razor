@@ -1,0 +1,16 @@
+﻿@code {
+    [Parameter] public bool Play { get; set; }
+    [Parameter] public int IterationCount { get; set; }
+    [Parameter] public double DurationSeconds { get; set; }
+    [Parameter] public string Direction { get; set; } = string.Empty;
+    [Parameter] public string[]? Keyframes { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; } 
+}
+
+<div class="animate-keyframes"
+     style="animation-play-state: @(Play ? "running" : "paused");
+            animation-duration: @(DurationSeconds + "s");
+            animation-iteration-count: @(IterationCount);
+            animation-direction: @(Direction);">
+    @ChildContent
+</div>

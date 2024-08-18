@@ -1,0 +1,14 @@
+﻿@page "/photos/{albumId}/{albumCaption}"
+
+@code {
+    [Parameter]
+    public string AlbumId { get; set; } = string.Empty;
+
+    [Parameter]
+    public string AlbumCaption { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Use AlbumId and AlbumCaption here
+    }
+}

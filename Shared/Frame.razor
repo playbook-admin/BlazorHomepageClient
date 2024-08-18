@@ -1,0 +1,22 @@
+﻿@namespace BlazorClient.Shared
+
+<nav>
+    <!-- Your navigation code here -->
+</nav>
+<div class="main-content">
+    @HeaderContent
+    @BodyContent
+    <FooterContent /> 
+    @ChildContent 
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? BodyContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; } // Add this parameter to accept child content
+}

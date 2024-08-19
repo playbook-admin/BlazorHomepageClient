@@ -11,4 +11,17 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\css\fontawesome-free\css\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\js\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\less\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\metadata\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\scss\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\sprites\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\svgs\brands\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\svgs\regular\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\svgs\solid\" />
+	  <Folder Include="wwwroot\css\fontawesome-free\webfonts\" />
+	</ItemGroup>
+
 </Project>

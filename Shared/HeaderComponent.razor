@@ -13,14 +13,32 @@
             <div class="collapse navbar-collapse navbar-nav-container">
                 <ul class="navbar-nav navbar-nav-main spriteTabs">
                     <li class="nav-item">
-                        <NavLink to="/" class="nav-link no-underline" onClick=closeSidebar}>Home<span /></NavLink>
+                        <NavLink to="/" class="nav-link no-underline" onClick="closeSidebar">Home<span /></NavLink>
                     </li>
-                    <li ref={menuRefs.albumsLi} class="nav-item">
-                        <NavLink to="/albums" class="nav-link no-underline" onClick={closeSidebar}>Album<span /></NavLink>
+                    <li ref=menuRefs["albumsLi"] class="nav-item">
+                        <NavLink to="/albums" class="nav-link no-underline" onClick="closeSidebar">Album<span /></NavLink>
                     </li>
-                </ul>           
-          
-              </div>
+                </ul>
+                <ul class="navbar-nav navbar-nav-right spriteTabs">
+                    <li class="nav-item">
+                        <a href="@mapUrl"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="nav-link no-underline">
+                            <span></span>&nbsp;&nbsp;
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink to="/user" class="nav-link no-underline">
+                            <span></span>&nbsp;
+                            <i class="fas fa-user"></i>
+                            <span></span>
+                        </NavLink>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </footer>
@@ -36,6 +54,8 @@
         { "albumsLi", default },
         { "userLi", default }
     };
+
+    private string mapUrl = "https://www.google.com/maps/place/Statue+of+Liberty/@40.688969,-113.0657959,4z/data=!4m10!1m2!2m1!1sstaue+of+liberty!3m6!1s0x89c25090129c363d:0x40c6a5770d25022b!8m2!3d40.6892494!4d-74.0445004!15sChFzdGF0dWUgb2YgbGliZXJ0eVoTIhFzdGF0dWUgb2YgbGliZXJ0eZIBE2hpc3RvcmljYWxfbGFuZG1hcmvgAQA!16zL20vMDcycDg?entry=ttu";
 
     protected override async Task OnInitializedAsync()
     {

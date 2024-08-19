@@ -1,18 +1,18 @@
 @namespace BlazorClient.Shared
 @inject IJSRuntime JSRuntime
 
-<footer>
-    <div class="bg-light text-center text-lg-start" style="@headerStyle">
+<div>
+    <header class="navbar navbar-expand-lg navbar-light bg-light" style="@headerStyle">
         <div class="container">
             <a class="navbar-brand pb-5 mb-3" href="/">
-                <ReactSvgIcon text="Blazor home page" icon="logo" iconClass="logo"/>
+                <ReactSvgIcon text="Blazor home page" icon="/images/info.png" iconClass="logo" />
             </a>
-            <button class="navbar-toggler" type="button">
+            <button ref="elCollapseButton" class="navbar-toggler" type="button">
                 <span class="navbar-toggler-icon"><img src="/images/hamburger" alt="Hamburger Icon" /></span>
             </button>
             <div class="collapse navbar-collapse navbar-nav-container">
                 <ul class="navbar-nav navbar-nav-main spriteTabs">
-                    <li class="nav-item">
+                    <li ref=menuRefs["homeLi"] class ="nav-item">
                         <NavLink to="/" class="nav-link no-underline" onClick="closeSidebar">Home<span /></NavLink>
                     </li>
                     <li ref=menuRefs["albumsLi"] class="nav-item">
@@ -40,8 +40,8 @@
                 </ul>
             </div>
         </div>
-    </div>
-</footer>
+    </header>
+</div>
 
 @code {
     private string headerStyle = "";

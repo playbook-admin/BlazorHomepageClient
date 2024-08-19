@@ -1,6 +1,8 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using BlazorClient.Shared
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <Frame>
+        <Frame HeaderContent="@Header" FooterContent="@Footer">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         </Frame>
     </Found>
@@ -10,3 +12,8 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    private RenderFragment Header => @<HeaderComponent />;
+    private RenderFragment Footer => @<FooterComponent />;
+}

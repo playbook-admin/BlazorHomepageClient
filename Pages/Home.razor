@@ -1,13 +1,18 @@
 ﻿@page "/"
+@using BlazorClient.Components
+
 @code {
     private bool play = true;
     private double durationSeconds = 3;
     private double delaySeconds = 1;
     private Dictionary<string, object> props = new Dictionary<string, object>();
     private string epostJpg = "/images/mail.png";
+    protected override void OnInitialized()
+    {
+        // Set a breakpoint here
+        Console.WriteLine("Home initialized");
+    }
 }
-
-@using BlazorClient.Components
 
     <div class="container">
       <div class="row">

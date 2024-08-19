@@ -1,22 +1,26 @@
 ﻿@namespace BlazorClient.Shared
 
-<nav>
-    <!-- Your navigation code here -->
-</nav>
-<div class="main-content">
-    @HeaderContent
-    @BodyContent
-    <FooterContent /> 
-    @ChildContent 
-</div>
-
 @code {
     [Parameter]
     public RenderFragment? HeaderContent { get; set; }
 
     [Parameter]
-    public RenderFragment? BodyContent { get; set; }
+    public RenderFragment? FooterContent { get; set; }
 
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } // Add this parameter to accept child content
+    public RenderFragment? ChildContent { get; set; }
+}
+
+<div>
+    @HeaderContent
+    @ChildContent
+    @FooterContent
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Set a breakpoint here
+        Console.WriteLine("Frame initialized");
+    }
 }

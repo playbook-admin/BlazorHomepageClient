@@ -1,18 +1,50 @@
 @namespace BlazorClient.Shared
+@inject IJSRuntime JSRuntime
 
-<header>
-    <div class="bg-cover bg-center w-full text-white flex justify-center items-center"
-         style="background-image: url('/images/BootstrapFooterComposed.jpg');">
-        <p class="bg-black p-2">
-            © 2024 - Angular Homepage Ltd.  Header
-        </p>
+<footer>
+    <div class="bg-light text-center text-lg-start" style="@headerStyle">
+        <div class="container">
+            <a class="navbar-brand pb-5 mb-3" href="/">
+                <ReactSvgIcon text="Blazor home page" icon="logo" iconClass="logo"/>
+            </a>
+            <button class="navbar-toggler" type="button">
+                <span class="navbar-toggler-icon"><img src="/images/hamburger" alt="Hamburger Icon" /></span>
+            </button>
+            <div class="collapse navbar-collapse navbar-nav-container">
+                <ul class="navbar-nav navbar-nav-main spriteTabs">
+                    <li class="nav-item">
+                        <NavLink to="/" class="nav-link no-underline" onClick=closeSidebar}>Home<span /></NavLink>
+                    </li>
+                    <li ref={menuRefs.albumsLi} class="nav-item">
+                        <NavLink to="/albums" class="nav-link no-underline" onClick={closeSidebar}>Album<span /></NavLink>
+                    </li>
+                </ul>           
+          
+              </div>
+        </div>
     </div>
-</header>
+</footer>
 
 @code {
-    protected override void OnInitialized()
+    private string headerStyle = "";
+    private string spriteType = "Header";
+    private ElementReference elCollapseButton;
+    private ElementReference sidebarRef;
+    private Dictionary<string, ElementReference> menuRefs = new Dictionary<string, ElementReference>
     {
-        // Set a breakpoint here
-        Console.WriteLine("Header initialized");
+        { "homeLi", default },
+        { "albumsLi", default },
+        { "userLi", default }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call JavaScript function to get the dynamic style with spriteType parameter
+        headerStyle = await JSRuntime.InvokeAsync<string>("getDynamicStyle", spriteType);
+    }
+
+    private void closeSidebar()
+    {
+        // Your closeSidebar logic here
     }
 }

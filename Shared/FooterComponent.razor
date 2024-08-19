@@ -1,18 +1,21 @@
 @namespace BlazorClient.Shared
+@inject IJSRuntime JSRuntime
 
 <footer>
-    <div class="bg-cover bg-center w-full text-white flex justify-center items-center"
-         style="background-image: url('/images/BootstrapFooterComposed.jpg');">
-        <p class="bg-black p-2">
-            © 2024 - Angular Homepage Ltd. Footer
-        </p>
+    <div class="navbar navbar-expand-lg navbar-light bg-light" style="@footerStyle">
+        <div class="text-center p-3">
+            © 2024 - Blazor Homepage Ltd. Footer
+        </div>
     </div>
 </footer>
 
 @code {
-    protected override void OnInitialized()
+    private string footerStyle = "";
+    private string spriteType = "Footer"; 
+
+    protected override async Task OnInitializedAsync()
     {
-        // Set a breakpoint here
-        Console.WriteLine("Footer initialized");
+        // Call JavaScript function to get the dynamic style with spriteType parameter
+        footerStyle = await JSRuntime.InvokeAsync<string>("getDynamicStyle", spriteType);
     }
 }

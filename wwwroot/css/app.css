@@ -1,4 +1,15 @@
-﻿@keyframes rotate {
+﻿/* Add this CSS for the rotating animation */
+@keyframes rotate100 {
+    0% {
+        transform: rotateX(0) rotateY(0) rotateZ(0);
+    }
+    100% {
+        transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+    }
+}
+
+
+@keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }

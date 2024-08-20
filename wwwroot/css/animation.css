@@ -56,10 +56,6 @@
     animation-delay: 2s; /* Delay of 2 seconds before starting the fade-in */
 }
 
-.hidden {
-    display: none;
-}
-
 .opaque {
     opacity: 0;
 }

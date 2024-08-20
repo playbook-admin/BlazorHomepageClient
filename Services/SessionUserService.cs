@@ -1,6 +1,6 @@
 ﻿namespace BlazorClient.Services;
 
-public class SessionUserService
+public class SessionUserService : ISessionUserService
 {
     public bool IsLoggedIn { get; set; }
 

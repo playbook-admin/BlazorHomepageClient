@@ -2,7 +2,7 @@
 {
     public class AppSettings
     {
-        public string ApiBaseAddress { get; set; } = string.Empty;
+        public string ApiAddress { get; set; } = string.Empty;
     }
 
 }

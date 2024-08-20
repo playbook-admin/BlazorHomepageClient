@@ -1,5 +1,8 @@
 ﻿@page "/"
 @using BlazorClient.Components
+@using BlazorClient.Services
+@inject IGlobalStateService globalStateService
+@inject HttpClient HttpClient
 
 @code {
     private bool play = true;
@@ -7,10 +10,28 @@
     private double delaySeconds = 1;
     private Dictionary<string, object> props = new Dictionary<string, object>();
     private string epostJpg = "/images/mail.png";
-    protected override void OnInitialized()
+    private string apiAddress = string.Empty;
+    private long currentTicks;
+    private string imageUrl = string.Empty;
+
+    protected override async Task OnInitializedAsync()
     {
-        // Set a breakpoint here
-        Console.WriteLine("Home initialized");
+        apiAddress = globalStateService.ApiAddress;
+        currentTicks = DateTime.Now.Ticks;
+        imageUrl = $"{apiAddress}/Handler/Index/PhotoID=0/Size=M?{currentTicks}";
+
+        try
+        {
+            var response = await HttpClient.GetAsync(imageUrl);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.Error.WriteLine("Failed to load image.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching image: {ex.Message}");
+        }
     }
 }
 
@@ -32,12 +53,13 @@
                   <div class="panel-body">
                     <div class="row text-center">
                       <div class="col-md-12" id="divSwirl">
-                        <AnimateImage Play="true" Rand="@(DateTime.Now.Ticks)">
+                        <AnimateImage Play="true" Rand="@currentTicks">
                           <PhotoFrame>
-                            <a href="/api/details/0/0/-?@(DateTime.Now.Ticks)">
-                              <img src="/Handler/Index/PhotoID=0/Size=M?@(DateTime.Now.Ticks)" alt="Animated Image" 
-                                    style="border: 4px solid white; max-height: 100%; max-width: 100%; vertical-align: middle;" />
-                            </a>
+                              <a href="@imageUrl">
+                                  <img src="@imageUrl"
+                                       alt="Animated Image"
+                                       style="border: 4px solid white; max-height: 100%; max-width: 100%; vertical-align: middle;" />
+                              </a>
                           </PhotoFrame>
                         </AnimateImage>
                       </div>
@@ -47,7 +69,7 @@
                       <div id="divText" style={{ minHeight: '60px' }}>Photos taken by employees at p&#229; Sir&#233;us Consulting AB.</div>
                       <div id="divDownload" style={{ minHeight: '50px' }}>
                         <p>
-                          <a href="/Handler/Download/0/M">
+                          <a href="@($"{apiAddress}/Handler/Download/0/M")">
                             <img src="/images/button-download.gif" alt="download photo" />
                           </a>
                         </p>

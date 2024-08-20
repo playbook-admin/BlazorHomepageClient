@@ -27,8 +27,11 @@ public class Program
                 throw new Exception("Failed to load appsettings.json");
             }
 
+            builder.Services.AddSingleton<IGlobalStateService, GlobalStateService>();
+            builder.Services.AddSingleton<ISessionUserService, SessionUserService>();
+
             // Use settings to configure HttpClient
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(appSettings.ApiBaseAddress) });
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(appSettings.ApiAddress) });
         }
         catch (Exception ex)
         {

@@ -9,11 +9,6 @@
 }
 
 
-@keyframes rotate2d {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
 @keyframes scale {
     0% { transform: scaleX(0.05) scaleY(0.05); }
     10% { transform: scaleX(0.1) scaleY(0.1); }
@@ -29,14 +24,20 @@
     /* Add more steps if needed */
 }
 
-/*.rotate {
-    animation: rotate2d 3s linear;
-}
-*/
+
 .scale {
     animation: scale 2s alternate;
 }
 
+/* Keyframes for scaling up */
+@keyframes scaleUp {
+    from {
+        transform: scale(0.05); /* Start from 5% of the original size */
+    }
+    to {
+        transform: scale(1); /* End at 100% of the original size */
+    }
+}
 
 .fade-in {
     animation: fadeIn 3s ease-in;
@@ -46,3 +47,39 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* Keyframes for rotation */
+@keyframes rotate360 {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Common animation classes */
+.rotate-animation {
+    animation: rotate360 0.2s linear 10; /* 30 iterations, then stops */
+}
+
+
+/* Scaling animation */
+.scale-animation {
+    animation: scaleUp 2s ease-out forwards; /* 6 seconds duration, easing out */
+}
+
+
+.fade-in-animation {
+    animation: fadeIn 2s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+

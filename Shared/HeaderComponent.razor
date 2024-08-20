@@ -12,10 +12,10 @@
         <div class="collapse navbar-collapse navbar-nav-container">
             <ul class="navbar-nav navbar-nav-main spriteTabs">
                 <li @ref=homeLiRef class="nav-item">
-                    <NavLink to="/" class="nav-link no-underline" @onclick="closeSidebar">Home<span /></NavLink>
+                    <NavLink href="/" class="nav-link no-underline" @onclick="closeSidebar">Home<span /></NavLink>
                 </li>
                 <li @ref=albumsLiRef class="nav-item">
-                    <NavLink to="/albums" class="nav-link no-underline" @onclick="closeSidebar">Album<span /></NavLink>
+                    <NavLink href="/albums" class="nav-link no-underline" @onclick="closeSidebar">Album<span /></NavLink>
                 </li>
             </ul>
             <ul class="navbar-nav navbar-nav-right spriteTabs">
@@ -25,7 +25,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <NavLink to="/user" class="nav-link no-underline">
+                    <NavLink href="/user" class="nav-link no-underline">
                         <span></span>&nbsp;<i class="fas fa-user"></i><span></span>
                     </NavLink>
                 </li>
@@ -37,15 +37,15 @@
 <div class="sidebar @(sidebarOpen ? "open" : "")">
     <div class="sidebar-header" @ref="sidebarRef">
         <a href="@mapUrl" target="_blank" rel="noopener noreferrer" class="nav-link no-underline"><span></span>&nbsp;&nbsp;<i class="fas fa-map-marker-alt"></i><span></span></a>
-        <NavLink to="/user" class="nav-link" @onclick="closeSidebar"><i class="fas fa-user"></i></NavLink>
+        <NavLink href="/user" class="nav-link" @onclick="closeSidebar"><i class="fas fa-user"></i></NavLink>
     </div>
     <div class="nav-list">
         <ul class="navbar-nav">
             <li @ref=homeLiRef class="nav-item">
-                <NavLink to="/" class="nav-link" @onclick="closeSidebar">Home</NavLink>
+                <NavLink href="/" class="nav-link" @onclick="closeSidebar">Home</NavLink>
             </li>
             <li @ref=albumsLiRef class="nav-item">
-                <NavLink to="/albums" class="nav-link" @onclick="closeSidebar">Album</NavLink>
+                <NavLink href="/albums" class="nav-link" @onclick="closeSidebar">Album</NavLink>
             </li>
         </ul>
     </div>

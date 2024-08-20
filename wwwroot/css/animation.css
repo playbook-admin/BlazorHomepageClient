@@ -9,26 +9,6 @@
 }
 
 
-@keyframes scale {
-    0% { transform: scaleX(0.05) scaleY(0.05); }
-    10% { transform: scaleX(0.1) scaleY(0.1); }
-    20% { transform: scaleX(0.15) scaleY(0.15); }
-    30% { transform: scaleX(0.2) scaleY(0.2); }
-    40% { transform: scaleX(0.25) scaleY(0.25); }
-    50% { transform: scaleX(0.3) scaleY(0.3); }
-    60% { transform: scaleX(0.35) scaleY(0.35); }
-    70% { transform: scaleX(0.4) scaleY(0.4); }
-    80% { transform: scaleX(0.45) scaleY(0.45); }
-    90% { transform: scaleX(0.5) scaleY(0.5); }
-    100% { transform: scaleX(0.55) scaleY(0.55); }
-    /* Add more steps if needed */
-}
-
-
-.scale {
-    animation: scale 2s alternate;
-}
-
 /* Keyframes for scaling up */
 @keyframes scaleUp {
     from {
@@ -39,9 +19,6 @@
     }
 }
 
-.fade-in {
-    animation: fadeIn 3s ease-in;
-}
 
 @keyframes fadeIn {
     from { opacity: 0; }

@@ -6,16 +6,16 @@
         <a class="navbar-brand pb-5 mb-3" href="/">
             <ReactSvgIcon Text="Blazor home page" Icon="/images/info.png" IconClass="logo" />
         </a>
-        <button @ref=elCollapseButtonRef class="navbar-toggler" type="button">
+        <button class="navbar-toggler" type="button">
             <span class="navbar-toggler-icon"><img src="/images/hamburger" alt="Hamburger Icon" /></span>
         </button>
         <div class="collapse navbar-collapse navbar-nav-container">
             <ul class="navbar-nav navbar-nav-main spriteTabs">
-                <li @ref=homeLiRef class="nav-item">
-                    <NavLink href="/" class="nav-link no-underline" @onclick="closeSidebar">Home<span /></NavLink>
+                <li class="nav-item">
+                    <NavLink href="/" class="nav-link no-underline" Match="NavLinkMatch.All" @onclick="closeSidebar">Home<span /></NavLink>
                 </li>
-                <li @ref=albumsLiRef class="nav-item">
-                    <NavLink href="/albums" class="nav-link no-underline" @onclick="closeSidebar">Album<span /></NavLink>
+                <li class="nav-item">
+                    <NavLink href="/albums" class="nav-link no-underline" Match="NavLinkMatch.All" @onclick="closeSidebar">Album<span /></NavLink>
                 </li>
             </ul>
             <ul class="navbar-nav navbar-nav-right spriteTabs">
@@ -25,7 +25,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <NavLink href="/user" class="nav-link no-underline">
+                    <NavLink href="/user" class="nav-link no-underline" Match="NavLinkMatch.All">
                         <span></span>&nbsp;<i class="fas fa-user"></i><span></span>
                     </NavLink>
                 </li>
@@ -35,16 +35,16 @@
 </header>
 
 <div class="sidebar @(sidebarOpen ? "open" : "")">
-    <div class="sidebar-header" @ref="sidebarRef">
+    <div class="sidebar-header">
         <a href="@mapUrl" target="_blank" rel="noopener noreferrer" class="nav-link no-underline"><span></span>&nbsp;&nbsp;<i class="fas fa-map-marker-alt"></i><span></span></a>
         <NavLink href="/user" class="nav-link" @onclick="closeSidebar"><i class="fas fa-user"></i></NavLink>
     </div>
     <div class="nav-list">
         <ul class="navbar-nav">
-            <li @ref=homeLiRef class="nav-item">
+            <li class="nav-item">
                 <NavLink href="/" class="nav-link" @onclick="closeSidebar">Home</NavLink>
             </li>
-            <li @ref=albumsLiRef class="nav-item">
+            <li class="nav-item">
                 <NavLink href="/albums" class="nav-link" @onclick="closeSidebar">Album</NavLink>
             </li>
         </ul>
@@ -54,11 +54,6 @@
 @code {
     private string headerStyle = "";
     private string spriteType = "Header";
-    private static ElementReference elCollapseButtonRef;
-    private static ElementReference sidebarRef;
-    private static ElementReference homeLiRef;
-    private static ElementReference albumsLiRef;
-    private static ElementReference userLiRef;
 
     private string mapUrl = "https://www.google.com/maps/place/Statue+of+Liberty/@40.688969,-113.0657959,4z/data=!4m10!1m2!2m1!1sstaue+of+liberty!3m6!1s0x89c25090129c363d:0x40c6a5770d25022b!8m2!3d40.6892494!4d-74.0445004!15sChFzdGF0dWUgb2YgbGliZXJ0eVoTIhFzdGF0dWUgb2YgbGliZXJ0eZIBE2hpc3RvcmljYWxfbGFuZG1hcmvgAQA!16zL20vMDcycDg?entry=ttu";
 

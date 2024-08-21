@@ -2,15 +2,15 @@
 
 public class SessionUserService : ISessionUserService
 {
-    public bool IsLoggedIn { get; set; }
+    public bool IsAuthorized { get; set; }
 
     public void Login(string userName)
     {
-        IsLoggedIn = true;
+        IsAuthorized = true;
     }
 
     public void Logout()
     {
-        IsLoggedIn = false;
+        IsAuthorized = false;
     }
 }

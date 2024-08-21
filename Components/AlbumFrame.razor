@@ -1,0 +1,213 @@
+﻿@namespace BlazorClient.Components
+@using BlazorClient.Services
+@using Microsoft.AspNetCore.Components.Routing
+@inject IGlobalStateService GlobalStateService
+
+@code {
+    [Parameter]
+    public int AlbumID { get; set; }
+
+    [Parameter]
+    public int PhotoCount { get; set; }
+
+    [Parameter]
+    public string Caption { get; set; }
+
+    [Parameter]
+    public bool IsPublic { get; set; }
+
+    [Parameter]
+    public int ItemCount { get; set; }
+
+    [Parameter]
+    public bool IsAuthorized { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnDelete { get; set; }
+
+    [Parameter]
+    public EventCallback<(int AlbumID, string NewCaption)> OnUpdate { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnAdd { get; set; }
+
+    private bool IsAddNewAlbum;
+    private bool IsUpdateOldAlbum;
+    private bool IsDisabledForAddAndUpdate;
+    private bool IsDisabledForDelete;
+    private string ApiAddress = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Initialize the boolean flags
+        IsAddNewAlbum = AlbumID == 0;
+        IsUpdateOldAlbum = IsAuthorized && !IsAddNewAlbum;
+        IsDisabledForAddAndUpdate = string.IsNullOrWhiteSpace(Caption);
+        IsDisabledForDelete = PhotoCount > 0;
+        ApiAddress = GlobalStateService.ApiAddress;
+    }
+
+    private async Task handleUpdate(int albumID, string newCaption)
+    {
+        await OnUpdate.InvokeAsync((albumID, newCaption));
+    }
+
+    private async Task handleDelete(int albumID)
+    {
+        await OnDelete.InvokeAsync(albumID);
+    }
+
+    private async Task handleAdd(string newCaption)
+    {
+        await OnAdd.InvokeAsync(newCaption);
+    }
+}
+
+<td class="item">
+    @if (IsUpdateOldAlbum)
+    {
+        <div style="display: flex; justify-content: center; align-items: center; color: black;">
+            <i class="fas fa-save"
+               @onclick="() => { if (!IsDisabledForAddAndUpdate) handleUpdate(AlbumID, Caption); }"
+               style="font-size: 2em;
+                      margin: 0 50px 0 100px;
+                      cursor: @(IsDisabledForAddAndUpdate ? "not-allowed" : "pointer");
+                      opacity: @(IsDisabledForAddAndUpdate ? 0.5 : 1);">
+            </i>
+
+            <i class="fas fa-trash-alt"
+               @onclick="() => { if (!IsDisabledForDelete) handleDelete(AlbumID); }"
+               style="font-size: 2em;
+                      margin: 0 150px 0 30px;
+                      cursor: @(IsDisabledForDelete ? "not-allowed" : "pointer");
+                      opacity: @(IsDisabledForDelete ? 0.5 : 1);">
+            </i>
+        </div>
+    }
+    else
+    {
+        <br />
+    }
+
+    @if (IsAddNewAlbum)
+    {
+        <div style="align-items: center; color: black;">
+            <i class="fas fa-save"
+               @onclick="() => { if (!IsDisabledForAddAndUpdate) handleAdd(Caption); }"
+               style="font-size: 2em;
+                      margin: 0 50px 0 100px;
+                      cursor: @(IsDisabledForAddAndUpdate ? "not-allowed" : "pointer");
+                      opacity: @(IsDisabledForAddAndUpdate ? 0.5 : 1);">
+            </i>
+        </div>
+    }
+    else
+    {
+        <br />
+    }
+
+    <table cellpadding="0" cellspacing="0" class="album-frame">
+        <tbody>
+            <tr>
+                <td class="topx----">
+                    <img alt="" src="/images/album-l1.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+                <td class="top-x---">
+                    <img alt="" src="/images/album-mtl.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+                <td class="top--x--" />
+                <td class="top---x-">
+                    <img alt="" src="/images/album-mtr.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+                <td class="top----x">
+                    <img alt="" src="/images/album-r1.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="mtpx----">
+                    <img alt="" src="/images/album-l2.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+                <td colspan="3" rowspan="3">
+                    <div class="fade-in-animation">
+                        @if (IsAddNewAlbum)
+                        {
+                            <img src="/images/default-image-small.png" class="photo_198"
+                                 style="border: 4px solid white; max-height: 100%; max-width: 100%;"
+                                 alt="Sample Photo from Album" />
+                        }
+                        else
+                        {
+                            <NavLink href="@($"/photos/{AlbumID}/{Caption}")">
+                                <img src="@($"{ApiAddress}/Handler/Index/AlbumID={AlbumID}/Size=M")"
+                                     class="photo_198"
+                                     style="border: 4px solid white; max-height: 100%; max-width: 100%;"
+                                     alt="Sample Photo from Album Number @AlbumID" />
+                            </NavLink>
+                        }
+                    </div>
+                </td>
+                <td class="mtp----x">
+                    <img alt="" src="/images/album-r2.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="midx----" />
+                <td class="mid----x" />
+            </tr>
+            <tr>
+                <td class="mbtx----">
+                    <img alt="" src="/images/album-l3.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+                <td class="mbt----x">
+                    <img alt="" src="/images/album-r3.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+            </tr>
+            <tr>
+                <td class="botx----">
+                    <img alt="" src="/images/album-l4.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+                <td class="bot-x---" style="text-align: left;">
+                    <img alt="" src="/images/album-mbl.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+                <td class="bot--x--" />
+                <td class="bot---x-" style="text-align: right;">
+                    <img alt="" src="/images/album-mbr.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />&nbsp;&nbsp;
+                </td>
+                <td class="bot----x">
+                    <img alt="" src="/images/album-r4.gif" style="max-height: 100%; max-width: 100%; vertical-align: top;" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    @if (IsUpdateOldAlbum)
+    {
+        <h4>
+            <div style="color: rgb(152, 0, 0);">
+                <textarea @bind="Caption" placeholder="Enter caption"></textarea>
+            </div>
+        </h4>
+    }
+    else
+    {
+        <h4>
+            <NavLink href="@($"/photos/{AlbumID}/{Caption}")">@Caption</NavLink>
+        </h4>
+    }
+
+    @if (IsAddNewAlbum)
+    {
+        <h4>
+            <div style="color: rgb(152, 0, 0);">
+                <textarea @bind="Caption" placeholder="Enter caption"></textarea>
+            </div>
+        </h4>
+    }
+    else
+    {
+        <br />
+        <div>@PhotoCount images</div>
+    }
+</td>
+
+

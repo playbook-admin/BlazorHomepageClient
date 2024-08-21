@@ -1,4 +1,160 @@
 ﻿@page "/albums"
+@using BlazorClient.Components
+@using BlazorClient.Services
+@using BlazorClient.Shared
+@using System.Text.Json
+@using System.Text
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@inject ISessionUserService SessionUserService
 
-<h3>Albums</h3>
-<p>Here are the albums.</p>
+@code {
+    private List<Album> albums = new List<Album>();
+    private bool showProgress = false;
+    private bool IsAuthorized => SessionUserService.IsAuthorized;
+
+    protected override async Task OnInitializedAsync()
+    {
+        showProgress = true;
+        Navigation.NavigateTo("/albums");
+        showProgress = false;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetAlbumsWithPhotoCount("api/albums");
+    }
+
+    private bool NoEmptyAlbumsExist(List<Album> albums)
+    {
+        return albums.All(album => album.PhotoCount > 0);
+    }
+
+    private async Task GetAlbumsWithPhotoCount(string url)
+    {
+        showProgress = true;
+        try
+        {
+            var response = await Http.GetFromJsonAsync<List<Album>>(url);
+            albums = response ?? new List<Album>();
+
+            if (IsAuthorized && NoEmptyAlbumsExist(albums))
+            {
+                albums.Add(new Album { AlbumID = 0, PhotoCount = 0, Caption = "", IsPublic = true });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Could not contact server: " + ex.Message);
+        }
+        finally
+        {
+            showProgress = false;
+        }
+    }
+
+    private async Task HandleDelete(int albumId)
+    {
+        showProgress = true;
+        await Http.DeleteAsync($"/api/albums/delete/{albumId}");
+        albums = albums.Where(album => album.AlbumID != albumId).ToList();
+        if (IsAuthorized && NoEmptyAlbumsExist(albums))
+        {
+            albums.Add(new Album { AlbumID = 0, PhotoCount = 0, Caption = "", IsPublic = true });
+        }
+        showProgress = false;
+    }
+
+    private async Task HandleUpdate((int albumId, string newCaption) args)
+    {
+        showProgress = true;
+        var content = new StringContent(JsonSerializer.Serialize(args.newCaption), Encoding.UTF8, "application/json");
+        await Http.PutAsync($"/api/albums/update/{args.albumId}", content);
+
+        var album = albums.FirstOrDefault(a => a.AlbumID == args.albumId);
+        if (album != null)
+        {
+            album.Caption = args.newCaption;
+        }
+        showProgress = false;
+    }
+
+    private async Task HandleAdd(string caption)
+    {
+        showProgress = true;
+        var content = new StringContent(JsonSerializer.Serialize(caption), Encoding.UTF8, "application/json");
+        var response = await Http.PostAsync("/api/albums/add", content);
+        var newAlbum = await response.Content.ReadFromJsonAsync<Album>();
+        if (newAlbum != null)
+        {
+            albums = albums.Where(album => album.AlbumID != 0).ToList();
+            albums.Add(newAlbum);
+        }
+        showProgress = false;
+    }
+
+    private List<List<Album>> GetAlbumRows()
+    {
+        var rows = new List<List<Album>>();
+        for (int i = 0; i < albums.Count; i += 2)
+        {
+            var row = new List<Album> { albums[i] };
+            if (i + 1 < albums.Count)
+            {
+                row.Add(albums[i + 1]);
+            }
+            rows.Add(row);
+        }
+        return rows;
+    }
+
+    private class Album
+    {
+        public int AlbumID { get; set; }
+        public int PhotoCount { get; set; }
+        public string Caption { get; set; } = string.Empty;
+        public bool IsPublic { get; set; }
+    }
+}
+           
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 hidden-md hidden-sm hidden-xs col-md-height col-md-top custom-vertical-left-border custom-vertical-right-border grey-background">
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>Photo album</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 col-md-height">
+            <div class="row">
+                <div class="spinner">
+                  <table class="album-frame" style="font-size: 10px; font-family: verdana, arial, helvetica, sans-serif;">
+                    <tbody>
+                        @foreach (var row in GetAlbumRows())
+                        {
+                            <tr>
+                                @for (int i = 0; i < row.Count; i++)
+                                {
+                                    <AlbumFrame
+                                        AlbumID="@(row[i].AlbumID)"
+                                        PhotoCount="@(row[i].PhotoCount)"
+                                        Caption="@(row[i].Caption)"
+                                        IsPublic="@(row[i].IsPublic)"
+                                        ItemCount="@i"
+                                        IsAuthorized="IsAuthorized"
+                                        OnDelete="HandleDelete"
+                                        OnUpdate="(args) => HandleUpdate((args.AlbumID, args.NewCaption))"
+                                        OnAdd="HandleAdd"
+                                    />
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+

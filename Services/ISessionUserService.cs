@@ -2,7 +2,7 @@
 {
     public interface ISessionUserService
     {
-        bool IsLoggedIn { get; set; }
+        bool IsAuthorized { get; set; }
 
         void Login(string userName);
         void Logout();

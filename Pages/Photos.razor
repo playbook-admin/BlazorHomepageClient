@@ -1,14 +1,201 @@
-﻿@page "/photos/{albumId}/{albumCaption}"
+﻿@page "/photos/{AlbumId:int}/{AlbumCaption}"
+@using BlazorClient.Models
+@using BlazorClient.Services
+@using BlazorClient.Components
+@inject NavigationManager Navigation
+@inject ISessionUserService SessionUserService
+@inject IGlobalStateService GlobalStateService
+@inject HttpClient Http
 
 @code {
-    [Parameter]
-    public string AlbumId { get; set; } = string.Empty;
+    [Parameter] public int AlbumId { get; set; }
+    [Parameter] public string AlbumCaption { get; set; } = string.Empty;
 
-    [Parameter]
-    public string AlbumCaption { get; set; } = string.Empty;
+    private bool IsAuthorized => SessionUserService.IsAuthorized;
+    private string Token => SessionUserService.Token;
 
-    protected override void OnInitialized()
+    private List<Photo> photos = new();
+    private string[] captions = Array.Empty<string>();
+    private bool[] showDeleteConfirmationModals = Array.Empty<bool>();
+    private string status = "idle";
+    private bool showProgress = false;
+    private string PhotoCaption = string.Empty;
+    private int selectedIndex = -1;
+    private string ApiAddress = string.Empty;
+
+    protected override async Task OnInitializedAsync()
     {
-        // Use AlbumId and AlbumCaption here
+        ApiAddress = GlobalStateService.ApiAddress;
+        await LoadPhotos();
+    }
+
+    private async Task LoadPhotos()
+    {
+        status = "loading";
+        photos = await GetPhotosAsync(AlbumId);
+        captions = photos.Select(p => p.Caption).ToArray();
+        showDeleteConfirmationModals = new bool[photos.Count];
+        status = "idle";
+    }
+
+    private async Task<List<Photo>> GetPhotosAsync(int albumId)
+    {
+        showProgress = true;
+        try
+        {
+            var response = await Http.GetFromJsonAsync<List<Photo>>($"api/photos/album/{albumId}");
+            photos = response ?? new List<Photo>();
+            return photos;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Could not contact server: " + ex.Message);
+            return new List<Photo>();
+        }
+        finally
+        {
+            showProgress = false;
+        }
+    }
+
+    private async Task<bool> DeletePhotoAsync(int photoId, string token)
+    {
+        showProgress = true;
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"api/photos/delete/{photoId}?token={token}");
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                photos.RemoveAll(p => p.PhotoID == photoId);
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Failed to delete photo: " + response.ReasonPhrase);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Could not contact server: " + ex.Message);
+            return false;
+        }
+        finally
+        {
+            showProgress = false;
+        }
+    }
+
+    private async Task<bool> UpdatePhotoCaptionAsync(int photoId, string caption, string token)
+    {
+        showProgress = true;
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, $"api/photos/update/{photoId}?caption={caption}&token={token}");
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Failed to update photo: " + response.ReasonPhrase);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Could not contact server: " + ex.Message);
+            return false;
+        }
+        finally
+        {
+            showProgress = false;
+        }
+    }
+
+    private async Task HandlePhotoAdded()
+    {
+        await LoadPhotos();
+        PhotoCaption = string.Empty;
+    }
+
+    private async Task HandleDelete(int index)
+    {
+        status = "loading";
+        await DeletePhotoAsync(photos[index].PhotoID, Token);
+        photos.RemoveAt(index);
+        captions = photos.Select(p => p.Caption).ToArray();
+        showDeleteConfirmationModals = new bool[photos.Count];
+        status = "idle";
+    }
+
+    private void ToggleDelete(int index)
+    {
+        showDeleteConfirmationModals[index] = !showDeleteConfirmationModals[index];
+    }
+
+    private async Task HandleUpdate(int index)
+    {
+        selectedIndex = index;
+        status = "loading";
+        await UpdatePhotoCaptionAsync(photos[index].PhotoID, captions[index], Token);
+        status = "idle";
     }
 }
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <h4>@AlbumCaption</h4>
+        </div>
+        <div class="col-md-9">
+            <table class="table">
+                @for (int i = 0; i < photos.Count; i++)
+                {
+                    var photo = photos[i];
+                    <tr>
+                        <td>
+                            @if (IsAuthorized)
+                            {
+                                <textarea @bind="captions[i]"></textarea>
+                            }
+                            else
+                            {
+                                <p>@photo.Caption</p>
+                            }
+
+                            <img src="@($"{ApiAddress}/Handler/Index/PhotoID={photo.PhotoID}/Size=M")" alt="Photo" style="border: 4px solid white;" />
+
+                            @if (IsAuthorized)
+                            {
+                                <div>
+                                    <button @onclick="() => ToggleDelete(i)">Delete</button>
+                                    <button @onclick="() => HandleUpdate(i)">Update</button>
+                                    @if (status == "loading" && selectedIndex == i)
+                                    {
+                                        <span class="spinner"></span>
+                                    }
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (IsAuthorized)
+                {
+                    <tr>
+                        <td>
+                            <textarea @bind="PhotoCaption" placeholder="Enter caption"></textarea>
+                            <PhotoFrame>
+                                <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
+                            </PhotoFrame>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>

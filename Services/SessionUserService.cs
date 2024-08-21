@@ -3,6 +3,7 @@
 public class SessionUserService : ISessionUserService
 {
     public bool IsAuthorized { get; set; }
+    public string Token { get; set; } = string.Empty;
 
     public void Login(string userName)
     {

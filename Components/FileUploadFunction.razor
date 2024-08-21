@@ -1,0 +1,7 @@
+﻿@page "/file-upload"
+
+@code {
+    [Parameter] public string AlbumId { get; set; }
+    [Parameter] public string Caption { get; set; }
+    [Parameter] public EventCallback<string> OnPhotoAdded { get; set; }  
+}

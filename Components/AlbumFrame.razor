@@ -43,7 +43,7 @@
         IsUpdateOldAlbum = IsAuthorized && !IsAddNewAlbum;
         IsDisabledForAddAndUpdate = string.IsNullOrWhiteSpace(Caption);
         IsDisabledForDelete = PhotoCount > 0;
-        ApiAddress = GlobalStateContext.ApiAddress;
+        ApiAddress = GlobalStateContext.State.ApiAddress;
     }
 
     private async Task handleUpdate(int albumID, string newCaption)

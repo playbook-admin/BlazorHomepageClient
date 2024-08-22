@@ -2,16 +2,26 @@
 
 public class SessionUserContext : ISessionUserContext
 {
-    public bool IsAuthorized { get; set; }
-    public string Token { get; set; } = string.Empty;
+    public class StateData
+    {
+        public bool IsAuthorized { get; set; }
+        public string Token { get; set; } = string.Empty;
+    }
+    public StateData State { get; private set; } = new StateData();
 
     public void Login(string userName)
     {
-        IsAuthorized = true;
+        State.IsAuthorized = true;
     }
 
-    public void Logout()
+    public Task<string> LogoutAsync()
     {
-        IsAuthorized = false;
+        State.IsAuthorized = false;
+        return Task.FromResult("userLoggedOut");
+    }
+
+    public Task<string> CheckPasswordAsync(string password) 
+    {
+        return Task.FromResult(password);
     }
 }

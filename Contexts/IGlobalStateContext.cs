@@ -2,7 +2,8 @@
 {
     public interface IGlobalStateContext
     {
-        string ApiAddress { get; set; }
-        string Loading { get; set; }
+        GlobalStateContext.StateData State { get; }
+
+        bool SetLoading(bool loading);
     }
 }

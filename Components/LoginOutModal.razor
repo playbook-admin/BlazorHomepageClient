@@ -1,0 +1,94 @@
+﻿@namespace BlazorClient.Components
+@inject IGlobalStateContext GlobalStateContext
+@inject ISessionUserContext SessionUserContext
+@inject NavigationManager Navigation
+@inject Blazored.Modal.BlazoredModalInstance BlazoredModalInstance
+@inject Blazored.Modal.Services.IModalService Modal
+
+<ModalHeader>@(SessionUserContext.State.IsAuthorized ? "Log out" : "Log in")</ModalHeader>
+<ModalBody>
+    @if (!SessionUserContext.State.IsAuthorized)
+    {
+        <FormInput
+            Text="@password"
+            Type="password"
+            Placeholder="Password"
+            PreText="@captionText"
+            OnTextChanged="HandlePasswordChanged"
+            OnEnter="HandleLogInOut"
+        />
+    }
+    else
+    {
+        <strong>Do you want to log out?</strong>
+    }
+</ModalBody>
+<ModalFooter>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    <button class="btn btn-primary" @onclick="HandleLogInOut">
+        @(SessionUserContext.State.IsAuthorized ? "Log out" : "Log in")
+    </button>
+    <button style="border: none; background: none; color: black;">
+        <i class="fas fa-spinner fa-2x" style="opacity: @(GlobalStateContext.State.Loading ? 1 : 0);" @onclick="@(() => { })"></i>
+    </button>
+</ModalFooter>
+
+@code {
+    [CascadingParameter] Blazored.Modal.BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public string CaptionText { get; set; } = "Log in";
+
+    private string password = string.Empty;
+
+    private string captionText = string.Empty;
+
+    private void HandlePasswordChanged(string value)
+    {
+        password = value;
+    }
+
+    private async Task HandleLogInOut()
+    {
+        GlobalStateContext.State.Loading = true;
+
+        try
+        {
+            if (SessionUserContext.State.IsAuthorized)
+            {
+                var response = await SessionUserContext.LogoutAsync();
+                if (response == "userLoggedOut")
+                {
+                    Navigation.NavigateTo("your-previous-page", forceLoad: true);
+                    await ModalInstance.CloseAsync(ModalResult.Ok("Logged out"));
+                }
+            }
+            else
+            {
+                var response = await SessionUserContext.CheckPasswordAsync(password);
+                if (response == "PasswordOk")
+                {
+                    Navigation.NavigateTo("your-previous-page", forceLoad: true);
+                    await ModalInstance.CloseAsync(ModalResult.Ok("Logged in"));
+                }
+                else
+                {
+                    Console.WriteLine("Login failed or invalid response");
+                    CaptionText = "Wrong password, try again...";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            CaptionText = "Wrong password, try again...";
+        }
+        finally
+        {
+            GlobalStateContext.State.Loading = false;
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await ModalInstance.CancelAsync();
+    }
+}

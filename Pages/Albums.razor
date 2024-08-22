@@ -11,7 +11,7 @@
 @code {
     private List<Album> albums = new List<Album>();
     private bool showProgress = false;
-    private bool IsAuthorized => SessionUserContext.IsAuthorized;
+    private bool IsAuthorized => SessionUserContext.State.IsAuthorized;
 
     protected override async Task OnInitializedAsync()
     {

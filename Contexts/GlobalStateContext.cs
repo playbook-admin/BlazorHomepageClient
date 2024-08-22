@@ -1,17 +1,31 @@
-﻿namespace BlazorClient.Contexts;
-
-public class GlobalStateContext : IGlobalStateContext
+﻿namespace BlazorClient.Contexts
 {
-    public string Loading { get; set; } = string.Empty;
-    public string ApiAddress { get; set; } = string.Empty;
-
-    public GlobalStateContext(IConfiguration configuration)
+    public class GlobalStateContext : IGlobalStateContext
     {
-        ApiAddress = configuration["ApiAddress"];
-    }
+        // Define the nested State class
+        public class StateData
+        {
+            public bool Loading { get; set; } 
+            public string ApiAddress { get; set; } = string.Empty;
+        }
 
-    public void SetApiAddress(string apiAddress)
-    {
-        ApiAddress = apiAddress;
+        // Property to hold the state
+        public StateData State { get; private set; } = new StateData();
+
+        public GlobalStateContext(IConfiguration configuration)
+        {
+            State.ApiAddress = configuration["ApiAddress"];
+        }
+
+        public void SetApiAddress(string apiAddress)
+        {
+            State.ApiAddress = apiAddress;
+        }
+
+        public bool SetLoading(bool loading)
+        {
+            State.Loading = loading;
+            return loading;
+        }
     }
 }

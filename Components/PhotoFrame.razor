@@ -1,4 +1,6 @@
-﻿<table class="photo-frame"
+﻿@namespace BlazorClient.Components
+
+<table class="photo-frame"
        style="min-height: 200px;
               visibility: @(Hidden ? "hidden" : "visible");
               background-image: @(DefaultImage ? "url('/content/images/default-image.png')" : "none");

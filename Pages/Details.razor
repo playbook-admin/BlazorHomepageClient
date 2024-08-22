@@ -19,7 +19,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ApiAddress = GlobalStateContext.ApiAddress;
+        ApiAddress = GlobalStateContext.State.ApiAddress;
         CurrentPhotoId = PhotoId;
 
         if (CurrentPhotoId == 0)

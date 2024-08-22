@@ -1,94 +1,27 @@
 ﻿@page "/loginoutform"
-@using System.Threading.Tasks
-@inject IGlobalStateContext GlobalState
-@inject IGlobalDispatch GlobalDispatch
+@using BlazorClient.Components
+@inject Blazored.Modal.Services.IModalService Modal
+@inject IGlobalStateContext GlobalStateContext
 @inject ISessionUserContext SessionUserContext
-@using BlazorClient.Contexts
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components.Forms
+@inject NavigationManager Navigation
 
-<ModalDialog Size="ModalSize.Small" Show="showModal" OnHide="HandleClose" AriaLabelledBy="example-modal-sizes-title-sm" Centered="true">
-    <ModalHeader>
-        <ModalTitle>
-            @if (!isAuthorized)
-            {
-                <FormInput Text="@password" Type="password" Placeholder="Password" PreText="log in" OnTextChanged="HandlePasswordChanged" OnEnter="HandleLogInOut" />
-            }
-            else
-            {
-                <strong>Log out</strong>
-            }
-        </ModalTitle>
-    </ModalHeader>
-    <ModalBody>
-        <Button Variant="secondary" OnClick="HandleClose">Cancel</Button>
-        <Button Variant="primary" OnClick="HandleLogInOut">
-            @(isAuthorized ? "Log out" : "Log in")
-        </Button>
-        <Button Style="border: none; background: none; color: black;">
-            <FontAwesomeIcon Icon="fa-spinner" Size="2x" Spin="true" Style="opacity: @(GlobalState.Loading ? "1" : "0")" />
-        </Button>
-    </ModalBody>
-</ModalDialog>
+<button @onclick="OpenModal">Open Login/Logout Form</button>
 
 @code {
-    private bool showModal = true;
-    private string password = string.Empty;
-    private bool isAuthorized;
-
-    protected override void OnInitialized()
+    private async Task OpenModal()
     {
-        base.OnInitialized();
-        // Load initial state
-        isAuthorized = SessionUserContext.IsAuthorized;
-    }
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(LoginOutModal.CaptionText), "Log in");
 
-    private void HandleClose()
-    {
-        showModal = false;
-        password = string.Empty;
-        NavigationManager.NavigateBack();
-    }
+        var modalResult = await Modal.Show<LoginOutModal>("Login/Logout", parameters).Result;
 
-    private void HandlePasswordChanged(string value)
-    {
-        password = value;
-    }
-
-    private async Task HandleLogInOut(MouseEventArgs e)
-    {
-        try
+        if (modalResult.Cancelled)
         {
-            GlobalDispatch.Dispatch(new SetLoadingAction(true));
-            if (isAuthorized)
-            {
-                var response = await SessionUserContext.LogOutAsync();
-                if (response == "userLoggedOut")
-                {
-                    NavigationManager.NavigateBack();
-                }
-            }
-            else
-            {
-                var response = await SessionUserContext.CheckPasswordAsync(password);
-                if (response == "PasswordOk")
-                {
-                    NavigationManager.NavigateBack();
-                }
-                else
-                {
-                    // Handle case where response is not a token
-                    Console.Error.WriteLine("Login failed or invalid response");
-                }
-            }
+            Console.WriteLine("Modal was closed without action.");
         }
-        catch (Exception ex)
+        else
         {
-            Console.Error.WriteLine($"Error: {ex.Message}");
-        }
-        finally
-        {
-            GlobalDispatch.Dispatch(new SetLoadingAction(false));
+            Console.WriteLine($"Modal closed with action: {modalResult.Data}");
         }
     }
 }

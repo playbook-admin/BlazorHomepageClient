@@ -17,7 +17,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        apiAddress = GlobalStateContext.ApiAddress;
+        apiAddress = GlobalStateContext.State.ApiAddress;
         currentTicks = DateTime.Now.Ticks;
         imageUrl = $"{apiAddress}/Handler/Index/PhotoID=0/Size=M?{currentTicks}";
 

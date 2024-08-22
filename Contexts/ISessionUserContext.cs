@@ -2,11 +2,11 @@
 {
     public interface ISessionUserContext
     {
-        bool IsAuthorized { get; set; }
-
-        string Token { get; set; }
+        SessionUserContext.StateData State { get; }
 
         void Login(string userName);
-        void Logout();
+        Task<string> LogoutAsync();
+
+        Task<string> CheckPasswordAsync(string password);
     }
 }

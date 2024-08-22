@@ -1,5 +1,94 @@
-﻿<h3>Component</h3>
+﻿@page "/loginoutform"
+@using System.Threading.Tasks
+@inject IGlobalStateContext GlobalState
+@inject IGlobalDispatch GlobalDispatch
+@inject ISessionUserContext SessionUserContext
+@using BlazorClient.Contexts
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+
+<ModalDialog Size="ModalSize.Small" Show="showModal" OnHide="HandleClose" AriaLabelledBy="example-modal-sizes-title-sm" Centered="true">
+    <ModalHeader>
+        <ModalTitle>
+            @if (!isAuthorized)
+            {
+                <FormInput Text="@password" Type="password" Placeholder="Password" PreText="log in" OnTextChanged="HandlePasswordChanged" OnEnter="HandleLogInOut" />
+            }
+            else
+            {
+                <strong>Log out</strong>
+            }
+        </ModalTitle>
+    </ModalHeader>
+    <ModalBody>
+        <Button Variant="secondary" OnClick="HandleClose">Cancel</Button>
+        <Button Variant="primary" OnClick="HandleLogInOut">
+            @(isAuthorized ? "Log out" : "Log in")
+        </Button>
+        <Button Style="border: none; background: none; color: black;">
+            <FontAwesomeIcon Icon="fa-spinner" Size="2x" Spin="true" Style="opacity: @(GlobalState.Loading ? "1" : "0")" />
+        </Button>
+    </ModalBody>
+</ModalDialog>
 
 @code {
+    private bool showModal = true;
+    private string password = string.Empty;
+    private bool isAuthorized;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // Load initial state
+        isAuthorized = SessionUserContext.IsAuthorized;
+    }
+
+    private void HandleClose()
+    {
+        showModal = false;
+        password = string.Empty;
+        NavigationManager.NavigateBack();
+    }
+
+    private void HandlePasswordChanged(string value)
+    {
+        password = value;
+    }
+
+    private async Task HandleLogInOut(MouseEventArgs e)
+    {
+        try
+        {
+            GlobalDispatch.Dispatch(new SetLoadingAction(true));
+            if (isAuthorized)
+            {
+                var response = await SessionUserContext.LogOutAsync();
+                if (response == "userLoggedOut")
+                {
+                    NavigationManager.NavigateBack();
+                }
+            }
+            else
+            {
+                var response = await SessionUserContext.CheckPasswordAsync(password);
+                if (response == "PasswordOk")
+                {
+                    NavigationManager.NavigateBack();
+                }
+                else
+                {
+                    // Handle case where response is not a token
+                    Console.Error.WriteLine("Login failed or invalid response");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            GlobalDispatch.Dispatch(new SetLoadingAction(false));
+        }
+    }
 }

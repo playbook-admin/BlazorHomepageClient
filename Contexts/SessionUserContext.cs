@@ -1,4 +1,4 @@
-﻿namespace BlazorClient.Services;
+﻿namespace BlazorClient.Contexts;
 
 public class SessionUserContext : ISessionUserContext
 {

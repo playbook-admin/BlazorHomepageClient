@@ -1,11 +1,11 @@
 ﻿namespace BlazorClient.Services;
 
-public class GlobalStateService : IGlobalStateService
+public class GlobalStateContext : IGlobalStateContext
 {
     public string Loading { get; set; } = string.Empty;
     public string ApiAddress { get; set; } = string.Empty;
 
-    public GlobalStateService(IConfiguration configuration)
+    public GlobalStateContext(IConfiguration configuration)
     {
         ApiAddress = configuration["ApiAddress"];
     }

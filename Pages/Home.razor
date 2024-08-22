@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using BlazorClient.Components
 @using BlazorClient.Services
-@inject IGlobalStateService globalStateService
+@inject IGlobalStateContext GlobalStateContext
 @inject HttpClient HttpClient
 @inject IJSRuntime JSRuntime
 
@@ -17,7 +17,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        apiAddress = globalStateService.ApiAddress;
+        apiAddress = GlobalStateContext.ApiAddress;
         currentTicks = DateTime.Now.Ticks;
         imageUrl = $"{apiAddress}/Handler/Index/PhotoID=0/Size=M?{currentTicks}";
 

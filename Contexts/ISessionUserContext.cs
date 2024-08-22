@@ -1,6 +1,6 @@
 ﻿namespace BlazorClient.Services
 {
-    public interface ISessionUserService
+    public interface ISessionUserContext
     {
         bool IsAuthorized { get; set; }
 

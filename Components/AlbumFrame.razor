@@ -1,7 +1,7 @@
 ﻿@namespace BlazorClient.Components
 @using BlazorClient.Services
 @using Microsoft.AspNetCore.Components.Routing
-@inject IGlobalStateService GlobalStateService
+@inject IGlobalStateContext GlobalStateContext
 
 @code {
     [Parameter]
@@ -39,12 +39,11 @@
 
     protected override void OnInitialized()
     {
-        // Initialize the boolean flags
         IsAddNewAlbum = AlbumID == 0;
         IsUpdateOldAlbum = IsAuthorized && !IsAddNewAlbum;
         IsDisabledForAddAndUpdate = string.IsNullOrWhiteSpace(Caption);
         IsDisabledForDelete = PhotoCount > 0;
-        ApiAddress = GlobalStateService.ApiAddress;
+        ApiAddress = GlobalStateContext.ApiAddress;
     }
 
     private async Task handleUpdate(int albumID, string newCaption)

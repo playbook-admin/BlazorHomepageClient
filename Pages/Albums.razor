@@ -6,12 +6,12 @@
 @using System.Text
 @inject NavigationManager Navigation
 @inject HttpClient Http
-@inject ISessionUserService SessionUserService
+@inject ISessionUserContext SessionUserContext
 
 @code {
     private List<Album> albums = new List<Album>();
     private bool showProgress = false;
-    private bool IsAuthorized => SessionUserService.IsAuthorized;
+    private bool IsAuthorized => SessionUserContext.IsAuthorized;
 
     protected override async Task OnInitializedAsync()
     {

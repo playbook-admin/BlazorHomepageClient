@@ -3,16 +3,16 @@
 @using BlazorClient.Services
 @using BlazorClient.Components
 @inject NavigationManager Navigation
-@inject ISessionUserService SessionUserService
-@inject IGlobalStateService GlobalStateService
+@inject ISessionUserContext SessionUserContext
+@inject IGlobalStateContext GlobalStateContext
 @inject HttpClient Http
 
 @code {
     [Parameter] public int AlbumId { get; set; }
     [Parameter] public string AlbumCaption { get; set; } = string.Empty;
 
-    private bool IsAuthorized => SessionUserService.IsAuthorized;
-    private string Token => SessionUserService.Token;
+    private bool IsAuthorized => SessionUserContext.IsAuthorized;
+    private string Token => SessionUserContext.Token;
 
     private List<Photo> photos = new();
     private string[] captions = Array.Empty<string>();
@@ -25,7 +25,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ApiAddress = GlobalStateService.ApiAddress;
+        ApiAddress = GlobalStateContext.ApiAddress;
         await LoadPhotos();
     }
 

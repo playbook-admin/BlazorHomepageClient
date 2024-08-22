@@ -1,6 +1,6 @@
 ﻿namespace BlazorClient.Services;
 
-public class SessionUserService : ISessionUserService
+public class SessionUserContext : ISessionUserContext
 {
     public bool IsAuthorized { get; set; }
     public string Token { get; set; } = string.Empty;

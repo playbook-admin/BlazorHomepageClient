@@ -12,7 +12,7 @@
     [Parameter] public string AlbumCaption { get; set; } = string.Empty;
 
     private List<Photo> Photos = new();
-    private int currentPhotoId;
+    private int CurrentPhotoId;
     private string ApiAddress = string.Empty;
     private List<RenderFragment> NumberElements = [];
 
@@ -20,15 +20,15 @@
     protected override async Task OnInitializedAsync()
     {
         ApiAddress = GlobalStateService.ApiAddress;
-        currentPhotoId = PhotoId;
+        CurrentPhotoId = PhotoId;
 
-        if (currentPhotoId == 0)
+        if (CurrentPhotoId == 0)
         {
             await FetchRandomPhotoDetails();
         }
         else
         {
-            await FetchPhotos(currentPhotoId);
+            await FetchPhotos(CurrentPhotoId);
             NumberElements = GenerateNumberElements();
         }
     }
@@ -36,7 +36,7 @@
     private List<RenderFragment> GenerateNumberElements()
     {
         var elements = new List<RenderFragment>();
-        int page = GetPage(currentPhotoId); // Assuming you have a method to get the current page number
+        int page = GetPage(CurrentPhotoId); // Assuming you have a method to get the current page number
 
         foreach (var (photo, index) in Photos.Select((photo, index) => (photo, index)))
         {
@@ -73,7 +73,7 @@
         try
         {
             Photos = await Http.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
-            currentPhotoId = photoId;
+            CurrentPhotoId = photoId;
         }
         catch (Exception ex)
         {
@@ -85,7 +85,7 @@
     {
         try
         {
-            currentPhotoId = await Http.GetFromJsonAsync<int>($"{ApiAddress}/api/details/random");
+            CurrentPhotoId = await Http.GetFromJsonAsync<int>($"{ApiAddress}/api/details/random");
             Photos = await Http.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
         }
         catch (Exception ex)
@@ -102,7 +102,7 @@
     private void SetDetails(int photoId)
     {
         Navigation.NavigateTo($"/details/{photoId}/{AlbumId}/{AlbumCaption}");
-        currentPhotoId = photoId;
+        CurrentPhotoId = photoId;
     }
 
     private int GetPage(int pid)
@@ -111,7 +111,7 @@
         return photo != null ? Photos.IndexOf(photo) + 1 : 0;
     }
 
-    private int Page => GetPage(currentPhotoId);
+    private int Page => GetPage(CurrentPhotoId);
 
     private int First => Photos.FirstOrDefault()?.PhotoID ?? 0;
     private int Last => Photos.LastOrDefault()?.PhotoID ?? 0;
@@ -177,10 +177,10 @@
                                             var currentPhoto = Photos[currentIndex];
                                             <p>@(currentPhoto.Caption)</p>
                                             <PhotoFrame>
-                                                <img src="@($"{ApiAddress}/Handler/Index/PhotoID={currentPhotoId}/Size=L")" class="photo_198" style="border: 4px solid white; object-fit: contain; min-height: 500px; max-height: 500px;" alt="PhotoID @currentPhotoId" />
+                                                <img src="@($"{ApiAddress}/Handler/Index/PhotoID={CurrentPhotoId}/Size=L")" class="photo_198" style="border: 4px solid white; object-fit: contain; min-height: 500px; max-height: 500px;" alt="PhotoID @CurrentPhotoId" />
                                             </PhotoFrame>
                                             <p>
-                                                <NavLink href="@($"{ApiAddress}/Handler/Download/{currentPhotoId}/Size=L")">
+                                                <NavLink href="@($"{ApiAddress}/Handler/Download/{CurrentPhotoId}/Size=L")">
                                                     <img src="/images/button-download.gif" alt="download this photo" />
                                                 </NavLink>
                                             </p>

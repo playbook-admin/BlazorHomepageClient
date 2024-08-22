@@ -149,53 +149,105 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-3">
-            <h4>@AlbumCaption</h4>
-        </div>
-        <div class="col-md-9">
-            <table class="table">
-                @for (int i = 0; i < photos.Count; i++)
-                {
-                    var photo = photos[i];
-                    <tr>
-                        <td>
-                            @if (IsAuthorized)
-                            {
-                                <textarea @bind="captions[i]"></textarea>
-                            }
-                            else
-                            {
-                                <p>@photo.Caption</p>
-                            }
+        <div class="col row-height">
+            <div class="col-md-3 hidden-md hidden-sm hidden-xs col-md-height col-md-top custom-vertical-left-border custom-vertical-right-border grey-background">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 />
+                        <h4>@AlbumCaption</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 col-md-height">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="buttonbar buttonbar-top">
+                        <NavLink href='/albums'>
+                            <img alt="" src="/images/button-gallery.gif" />
+                        </NavLink>
+                    </div>
+                    <div class="row justify-content-md-center">
+                        <div class="col col-lg-6">
+                        </div>
+                        <div class="col-md-auto">
+                            @*                   <FontAwesomeIcon icon={faSpinner} size={'2x'} spin style={status === 'loading' ? { opacity: '1' } : { opacity: '0' }} /> *@
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <table class="view" style="border-collapse:collapse;">
+                            <tbody>
+                                @{
+                                    int photosPerRow = 5;
+                                    int totalRows = (int)Math.Ceiling((double)photos.Count / photosPerRow);
+                                }
 
-                            <img src="@($"{ApiAddress}/Handler/Index/PhotoID={photo.PhotoID}/Size=M")" alt="Photo" style="border: 4px solid white;" />
+                                @for (int row = 0; row < totalRows; row++)
+                                {
+                                    <tr>
+                                        @for (int col = 0; col < photosPerRow; col++)
+                                        {
+                                            int index = row * photosPerRow + col;
+                                            if (index < photos.Count)
+                                            {
+                                                var photo = photos[index];
+                                                <td>
+                                                    @if (IsAuthorized)
+                                                    {
+                                                        <textarea @bind="captions[index]"></textarea>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@photo.Caption</div>
+                                                    }
+                                                    <PhotoFrame>
+                                                        <img src="@($"{ApiAddress}/Handler/Index/PhotoID={photo.PhotoID}/Size=M")" alt="Photo" style="border: 4px solid white;" />
+                                                    </PhotoFrame>
+                                                    @if (IsAuthorized)
+                                                    {
+                                                        <div>
+                                                            <button @onclick="() => ToggleDelete(index)">Delete</button>
+                                                            <button @onclick="() => HandleUpdate(index)">Update</button>
+                                                            @if (status == "loading" && selectedIndex == index)
+                                                            {
+                                                                <span class="spinner"></span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    </tr>
+                                }
 
-                            @if (IsAuthorized)
-                            {
-                                <div>
-                                    <button @onclick="() => ToggleDelete(i)">Delete</button>
-                                    <button @onclick="() => HandleUpdate(i)">Update</button>
-                                    @if (status == "loading" && selectedIndex == i)
-                                    {
-                                        <span class="spinner"></span>
-                                    }
-                                </div>
-                            }
-                        </td>
-                    </tr>
-                }
-                @if (IsAuthorized)
-                {
-                    <tr>
-                        <td>
-                            <textarea @bind="PhotoCaption" placeholder="Enter caption"></textarea>
-                            <PhotoFrame>
-                                <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
-                            </PhotoFrame>
-                        </td>
-                    </tr>
-                }
-            </table>
+                                @if (IsAuthorized)
+                                {
+                                    <tr>
+                                        <td>
+                                            <textarea @bind="PhotoCaption" placeholder="Enter caption"></textarea>
+                                            <PhotoFrame>
+                                                <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
+                                            </PhotoFrame>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

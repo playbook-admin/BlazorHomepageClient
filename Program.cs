@@ -3,7 +3,6 @@ using BlazorClient.Contexts;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Net.Http.Json;
-using Blazored.Modal;
 
 namespace BlazorClient;
 
@@ -33,8 +32,6 @@ public class Program
 
             // Use settings to configure HttpClient
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(appSettings.ApiAddress) });
-            // For Blazor WebAssembly (Program.cs)
-            builder.Services.AddBlazoredModal();
 
         }
         catch (Exception ex)

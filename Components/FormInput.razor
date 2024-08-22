@@ -1,0 +1,37 @@
+﻿@namespace BlazorClient.Components
+@code {
+    [Parameter] public string Text { get; set; }
+    [Parameter] public string Type { get; set; } = "text";
+    [Parameter] public string Placeholder { get; set; }
+    [Parameter] public string PreText { get; set; }
+    [Parameter] public EventCallback<string> OnTextChanged { get; set; }
+    [Parameter] public EventCallback OnEnter { get; set; }
+
+    private void HandleInputChange(ChangeEventArgs e)
+    {
+        Text = e.Value?.ToString();
+        OnTextChanged.InvokeAsync(Text);
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            OnEnter.InvokeAsync();
+        }
+    }
+}
+
+<div>
+    @if (!string.IsNullOrEmpty(PreText))
+    {
+        <label>@PreText</label>
+    }
+    <input type="@Type"
+           value="@Text"
+           placeholder="@Placeholder"
+           @oninput="HandleInputChange"
+           @onkeypress="HandleKeyPress"
+           class="form-control" />
+</div>
+

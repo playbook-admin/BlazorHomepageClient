@@ -1,27 +1,89 @@
 ﻿@page "/loginoutform"
-@using BlazorClient.Components
-@inject Blazored.Modal.Services.IModalService Modal
 @inject IGlobalStateContext GlobalStateContext
 @inject ISessionUserContext SessionUserContext
 @inject NavigationManager Navigation
 
-<button @onclick="OpenModal">Open Login/Logout Form</button>
-
-@code {
-    private async Task OpenModal()
-    {
-        var parameters = new ModalParameters();
-        parameters.Add(nameof(LoginOutModal.CaptionText), "Log in");
-
-        var modalResult = await Modal.Show<LoginOutModal>("Login/Logout", parameters).Result;
-
-        if (modalResult.Cancelled)
+<!-- Modal -->
+<Modal IsVisible="@isModalVisible" IsVisibleChanged="@((value) => isModalVisible = value)">
+    <Header>
+        <h5>@(isAuthorized ? "Log out" : "Log in")</h5>
+    </Header>
+    <Body>
+        @if (!isAuthorized)
         {
-            Console.WriteLine("Modal was closed without action.");
+            <FormInput Text="@password"
+                       Type="password"
+                       Placeholder="Password"
+                       PreText="@captionText"
+                       OnTextChanged="HandlePasswordChanged"
+                       OnEnter="HandleLogInOut" />
         }
         else
         {
-            Console.WriteLine($"Modal closed with action: {modalResult.Data}");
+            <strong>Do you want to log out?</strong>
         }
+    </Body>
+    <Footer>
+        <button class="btn btn-secondary" @onclick="HideModal">Cancel</button>
+        <button class="btn btn-primary" @onclick="HandleLogInOut">
+            @(isAuthorized ? "Log out" : "Log in")
+        </button>
+    </Footer>
+</Modal>
+
+@code {
+    private bool isModalVisible = false;
+    private bool isAuthorized = false; // Fetch this from a service or state
+    private string password = string.Empty;
+    private string captionText = "Log in";
+
+    protected override void OnInitialized()
+    {
+        isModalVisible = true; // Show the modal when the component initializes
+    }
+
+    private void ShowModal()
+    {
+        isModalVisible = true;
+    }
+
+    private void HideModal()
+    {
+        isModalVisible = false;
+    }
+
+    private void HandlePasswordChanged(string value)
+    {
+        password = value;
+    }
+
+    private async Task HandleLogInOut()
+    {
+        if (isAuthorized)
+        {
+            // Handle logout
+            isAuthorized = false;
+            HideModal();
+        }
+        else
+        {
+            // Handle login
+            bool loginSuccessful = await CheckPasswordAsync(password);
+            if (loginSuccessful)
+            {
+                isAuthorized = true;
+                HideModal();
+            }
+            else
+            {
+                captionText = "Wrong password, try again...";
+            }
+        }
+    }
+
+    private Task<bool> CheckPasswordAsync(string password)
+    {
+        // Replace this with your password checking logic
+        return Task.FromResult(password == "expectedPassword");
     }
 }

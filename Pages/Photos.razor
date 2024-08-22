@@ -209,7 +209,9 @@
                                                         <div>@photo.Caption</div>
                                                     }
                                                     <PhotoFrame>
-                                                        <img src="@($"{ApiAddress}/Handler/Index/PhotoID={photo.PhotoID}/Size=M")" alt="Photo" style="border: 4px solid white;" />
+                                                        <NavLink href="@($"/details/{photo.PhotoID}/{AlbumId}/{AlbumCaption}")">
+                                                            <img src="@($"{ApiAddress}/Handler/Index/PhotoID={photo.PhotoID}/Size=M")" alt="Photo" style="border: 4px solid white;" />
+                                                        </NavLink>
                                                     </PhotoFrame>
                                                     @if (IsAuthorized)
                                                     {

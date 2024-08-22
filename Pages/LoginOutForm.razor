@@ -33,7 +33,7 @@
 
 @code {
     private bool isModalVisible = false;
-    private bool isAuthorized = false; // Fetch this from a service or state
+    private bool isAuthorized => SessionUserContext.State.IsAuthorized;
     private string password = string.Empty;
     private string captionText = "Log in";
 
@@ -62,7 +62,7 @@
         if (isAuthorized)
         {
             // Handle logout
-            isAuthorized = false;
+            //isAuthorized = false;
             HideModal();
         }
         else
@@ -71,7 +71,7 @@
             bool loginSuccessful = await CheckPasswordAsync(password);
             if (loginSuccessful)
             {
-                isAuthorized = true;
+                //isAuthorized = true;
                 HideModal();
             }
             else

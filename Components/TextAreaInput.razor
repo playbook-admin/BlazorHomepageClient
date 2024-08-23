@@ -1,0 +1,31 @@
+﻿@namespace BlazorClient.Components
+@using System.Threading.Tasks
+
+<div style="display: inline;">
+    <strong>@PreText</strong>
+    <textarea style="text-align: center;"
+              value="@Text"
+              placeholder="@Placeholder"
+              @oninput="HandleChange">
+    </textarea>
+</div>
+
+@code {
+    [Parameter]
+    public string PreText { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Placeholder { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnTextChanged { get; set; }
+
+    private async Task HandleChange(ChangeEventArgs e)
+    {
+        var newValue = e.Value?.ToString() ?? string.Empty;
+        await OnTextChanged.InvokeAsync(newValue);
+    }
+}

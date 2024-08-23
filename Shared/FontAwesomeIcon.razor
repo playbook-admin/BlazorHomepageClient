@@ -1,14 +1,41 @@
 ﻿@namespace BlazorClient.Shared
+@using System.Globalization
+@inject IGlobalStateContext GlobalStateContext
 
-@typeparam TIcon
-@if (Icon != null)
-{
-    <i class="@Icon @AdditionalClasses" style="@Style"></i>
-}
+
+<i class="@IconClass" style="@Style"></i>
 
 @code {
-    [Parameter] public string Icon { get; set; }
-    [Parameter] public string AdditionalClasses { get; set; } = string.Empty;
-    [Parameter] public string Style { get; set; } = string.Empty;
-}
+    [Parameter]
+    public string Icon { get; set; } = string.Empty;
 
+    [Parameter]
+    public string Size { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool Spin { get; set; }
+
+    [Parameter]
+
+    public string Style { get; set; } = string.Empty;
+
+    private string IconClass => BuildIconClass();
+
+    private string BuildIconClass()
+    {
+        var classes = new List<string> { "fas" };
+        if (!string.IsNullOrEmpty(Icon))
+        {
+            classes.Add($"fa-{Icon}");
+        }
+        if (Spin)
+        {
+            classes.Add("fa-spin");
+        }
+        if (!string.IsNullOrEmpty(Size))
+        {
+            classes.Add($"fa-{Size}");
+        }
+        return string.Join(" ", classes);
+    }
+}

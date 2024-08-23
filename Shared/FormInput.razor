@@ -1,4 +1,4 @@
-﻿@namespace BlazorClient.Components
+﻿@namespace BlazorClient.Shared
 @code {
     [Parameter] public string Text { get; set; } = string.Empty;
     [Parameter] public string Type { get; set; } = "text";
@@ -29,7 +29,7 @@
 <div>
     <form @onsubmit="HandleSubmit" style="display:inline">
         <label style="display:inline">
-            <strong>@PreText;&nbsp;</strong>
+            <strong>@PreText</strong>
             <input type="@Type"
                    style="text-align:center"
                    value="@Text"

@@ -1,0 +1,31 @@
+﻿@namespace BlazorClient.Shared
+@inject IGlobalStateContext GlobalStateContext
+@inject ISessionUserContext SessionUserContext
+@inject NavigationManager Navigation
+
+@if (IsVisible)
+{
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+                @Header
+                @Body
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public RenderFragment Header { get; set; }
+    [Parameter] public RenderFragment Body { get; set; }
+    [Parameter] public RenderFragment Footer { get; set; }
+
+    private void CloseModal()
+    {
+        IsVisible = false;
+        IsVisibleChanged.InvokeAsync(IsVisible);
+    }
+}
+
+

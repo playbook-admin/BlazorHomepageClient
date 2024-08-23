@@ -68,7 +68,7 @@ public class SessionUserContext : ISessionUserContext
 
         // Handle error responses here
         var errorResponse = response.Content.ReadAsStringAsync().Result;
-        throw new Exception($"Login failed: {errorResponse}");
+        return errorResponse;
     }
 
     public class LoginModel

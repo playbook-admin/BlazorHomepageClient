@@ -5,7 +5,7 @@
 @using System.Text.Json
 @using System.Text
 @inject NavigationManager Navigation
-@inject HttpClient Http
+@inject IHttpClientFactory HttpClientFactory
 @inject ISessionUserContext SessionUserContext
 @inject IGlobalStateContext GlobalStateContext
 
@@ -83,7 +83,8 @@
         GlobalStateContext.SetLoading(true);
         try
         {
-            var response = await Http.GetFromJsonAsync<List<Album>>(url);
+            var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
+            var response = await httpClient.GetFromJsonAsync<List<Album>>(url);
             albums = response ?? new List<Album>();
 
             if (IsAuthorized && NoEmptyAlbumsExist(albums))
@@ -104,7 +105,9 @@
     private async Task HandleDelete(int albumId)
     {
         GlobalStateContext.SetLoading(true);
-        await Http.DeleteAsync($"/api/albums/delete/{albumId}");
+        var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
+        await httpClient.DeleteAsync($"/api/albums/delete/{albumId}");
+
         albums = albums.Where(album => album.AlbumID != albumId).ToList();
         if (IsAuthorized && NoEmptyAlbumsExist(albums))
         {
@@ -117,7 +120,8 @@
     {
         GlobalStateContext.SetLoading(true);
         var content = new StringContent(JsonSerializer.Serialize(args.newCaption), Encoding.UTF8, "application/json");
-        await Http.PutAsync($"/api/albums/update/{args.albumId}", content);
+        var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
+        await httpClient.PutAsync($"/api/albums/update/{args.albumId}", content);
 
         var album = albums.FirstOrDefault(a => a.AlbumID == args.albumId);
         if (album != null)
@@ -130,8 +134,9 @@
     private async Task HandleAdd(string caption)
     {
         GlobalStateContext.SetLoading(true);
+        var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
         var content = new StringContent(JsonSerializer.Serialize(caption), Encoding.UTF8, "application/json");
-        var response = await Http.PostAsync("/api/albums/add", content);
+        var response = await httpClient.PostAsync("/api/albums/add", content);
         var newAlbum = await response.Content.ReadFromJsonAsync<Album>();
         if (newAlbum != null)
         {

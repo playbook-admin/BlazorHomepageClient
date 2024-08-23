@@ -29,9 +29,18 @@ public class Program
 
             builder.Services.AddSingleton<IGlobalStateContext, GlobalStateContext>();
             builder.Services.AddSingleton<ISessionUserContext, SessionUserContext>();
+            builder.Services.AddTransient<AuthorizationMessageHandler>();
 
-            // Use settings to configure HttpClient
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(appSettings.ApiAddress) });
+            builder.Services.AddHttpClient("MyHttpClient", client =>
+            {
+                client.BaseAddress = new Uri(appSettings.ApiAddress);
+            })
+            .AddHttpMessageHandler<AuthorizationMessageHandler>();
+
+            // Optionally use the named HttpClient directly
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyHttpClient"));
+
+            await builder.Build().RunAsync();
 
         }
         catch (Exception ex)

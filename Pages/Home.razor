@@ -2,7 +2,7 @@
 @using BlazorClient.Components
 @using BlazorClient.Contexts
 @inject IGlobalStateContext GlobalStateContext
-@inject HttpClient HttpClient
+@inject IHttpClientFactory HttpClientFactory
 @inject IJSRuntime JSRuntime
 
 @code {
@@ -23,7 +23,8 @@
 
         try
         {
-            var response = await HttpClient.GetAsync(imageUrl);
+            var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
+            var response = await httpClient.GetAsync(imageUrl);
             if (!response.IsSuccessStatusCode)
             {
                 Console.Error.WriteLine("Failed to load image.");

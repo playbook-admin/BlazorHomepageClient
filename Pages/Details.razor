@@ -1,5 +1,5 @@
 ﻿@page "/details/{photoId:int}/{albumId:int}/{albumCaption}"
-@inject HttpClient Http
+@inject IHttpClientFactory HttpClientFactory
 @inject NavigationManager Navigation
 @inject IGlobalStateContext GlobalStateContext
 
@@ -72,7 +72,8 @@
     {
         try
         {
-            Photos = await Http.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
+            var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
+            Photos = await httpClient.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
             CurrentPhotoId = photoId;
         }
         catch (Exception ex)
@@ -85,8 +86,9 @@
     {
         try
         {
-            CurrentPhotoId = await Http.GetFromJsonAsync<int>($"{ApiAddress}/api/details/random");
-            Photos = await Http.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
+            var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
+            CurrentPhotoId = await httpClient.GetFromJsonAsync<int>($"{ApiAddress}/api/details/random");
+            Photos = await httpClient.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
         }
         catch (Exception ex)
         {

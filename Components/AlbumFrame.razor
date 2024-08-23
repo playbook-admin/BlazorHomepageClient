@@ -37,8 +37,9 @@
     private bool IsDisabledForDelete;
     private string ApiAddress = string.Empty;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
+        base.OnParametersSet();
         IsAddNewAlbum = AlbumID == 0;
         IsUpdateOldAlbum = IsAuthorized && !IsAddNewAlbum;
         IsDisabledForAddAndUpdate = string.IsNullOrWhiteSpace(Caption);
@@ -195,7 +196,7 @@
     {
         <h4>
             <div style="color: rgb(152, 0, 0);">
-                <textarea @bind="Caption" placeholder="Enter caption"></textarea>
+                <textarea @oninput="OnCaptionChanged" placeholder="Enter caption" value="@Caption"></textarea>
             </div>
         </h4>
     }

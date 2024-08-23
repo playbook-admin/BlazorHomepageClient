@@ -68,7 +68,9 @@
                                                 <td>
                                                     @if (IsAuthorized)
                                                     {
-                                                        <textarea @bind="captions[index]"></textarea>
+                                                        <TextAreaInput Placeholder="Enter caption"
+                                                                       Text="@captions[index]"
+                                                                       OnTextChanged="(value) => captions[index]=value" />
                                                     }
                                                     else
                                                     {
@@ -107,7 +109,9 @@
                                 {
                                     <tr>
                                         <td>
-                                            <textarea @bind="PhotoCaption" placeholder="Enter caption"></textarea>
+                                            <TextAreaInput Placeholder="Enter caption"
+                                                           Text="@PhotoCaption"
+                                                           OnTextChanged="(value) => PhotoCaption=value" />
                                             <PhotoFrame>
                                                 <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
                                             </PhotoFrame>

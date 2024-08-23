@@ -6,22 +6,26 @@
 <!-- Modal -->
 <Modal IsVisible="@isModalVisible" IsVisibleChanged="@((value) => isModalVisible = value)">
     <Header>
-        <h5>@(isAuthorized ? "Log out" : "Log in")</h5>
+        <div class="modal-header">
+            <div class="modal-title h4">
+                        @if (!isAuthorized)
+                        {
+                            <FormInput Text="@password"
+                                       Type="password"
+                                       Placeholder="Password"
+                                       PreText="@captionText"
+                                       OnTextChanged="HandlePasswordChanged"
+                                       OnEnter="HandleLogInOut" />
+                        }
+                        else
+                        {
+                            <strong>Do you want to log out?</strong>
+                        }
+            </div>
+        </div>
     </Header>
     <Body>
-        @if (!isAuthorized)
-        {
-            <FormInput Text="@password"
-                       Type="password"
-                       Placeholder="Password"
-                       PreText="@captionText"
-                       OnTextChanged="HandlePasswordChanged"
-                       OnEnter="HandleLogInOut" />
-        }
-        else
-        {
-            <strong>Do you want to log out?</strong>
-        }
+
     </Body>
     <Footer>
         <button class="btn btn-secondary" @onclick="HideModal">Cancel</button>
@@ -68,22 +72,16 @@
         else
         {
             // Handle login
-            bool loginSuccessful = await CheckPasswordAsync(password);
-            if (loginSuccessful)
+            var response = await SessionUserContext.CheckPasswordAsync(password);
+            if (response == "PasswordOk")
             {
-                //isAuthorized = true;
                 HideModal();
+                Navigation.NavigateTo("/albums");
             }
             else
             {
                 captionText = "Wrong password, try again...";
             }
         }
-    }
-
-    private Task<bool> CheckPasswordAsync(string password)
-    {
-        // Replace this with your password checking logic
-        return Task.FromResult(password == "expectedPassword");
     }
 }

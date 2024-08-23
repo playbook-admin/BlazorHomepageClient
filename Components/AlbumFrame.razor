@@ -46,6 +46,12 @@
         ApiAddress = GlobalStateContext.State.ApiAddress;
     }
 
+    private void OnCaptionChanged(ChangeEventArgs e)
+    {
+        Caption = e.Value?.ToString() ?? string.Empty;
+        IsDisabledForAddAndUpdate = string.IsNullOrWhiteSpace(Caption);
+    }
+
     private async Task handleUpdateAsync(int albumID, string newCaption)
     {
         GlobalStateContext.SetLoading(true);
@@ -204,7 +210,9 @@
     {
         <h4>
             <div style="color: rgb(152, 0, 0);">
-                <textarea @bind="Caption" placeholder="Enter caption"></textarea>
+                <div style="color: rgb(152, 0, 0);">
+                    <textarea @oninput="OnCaptionChanged" placeholder="Enter caption" value="@Caption"></textarea>
+                </div>
             </div>
         </h4>
     }

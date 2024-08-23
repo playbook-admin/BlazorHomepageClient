@@ -46,19 +46,25 @@
         ApiAddress = GlobalStateContext.State.ApiAddress;
     }
 
-    private async Task handleUpdate(int albumID, string newCaption)
+    private async Task handleUpdateAsync(int albumID, string newCaption)
     {
+        GlobalStateContext.SetLoading(true);
         await OnUpdate.InvokeAsync((albumID, newCaption));
+        GlobalStateContext.SetLoading(false);
     }
 
-    private async Task handleDelete(int albumID)
+    private async Task handleDeleteAsync(int albumID)
     {
+        GlobalStateContext.SetLoading(true);
         await OnDelete.InvokeAsync(albumID);
+        GlobalStateContext.SetLoading(false);
     }
 
-    private async Task handleAdd(string newCaption)
+    private async Task handleAddAsync(string newCaption)
     {
+        GlobalStateContext.SetLoading(true);
         await OnAdd.InvokeAsync(newCaption);
+        GlobalStateContext.SetLoading(false);
     }
 }
 
@@ -67,19 +73,19 @@
     {
         <div style="display: flex; justify-content: center; align-items: center; color: black;">
             <i class="fas fa-save"
-               @onclick="() => { if (!IsDisabledForAddAndUpdate) handleUpdate(AlbumID, Caption); }"
+               @onclick="async () => { if (!IsDisabledForAddAndUpdate) await handleUpdateAsync(AlbumID, Caption); }"
                style="font-size: 2em;
-                      margin: 0 50px 0 100px;
-                      cursor: @(IsDisabledForAddAndUpdate ? "not-allowed" : "pointer");
-                      opacity: @(IsDisabledForAddAndUpdate ? 0.5 : 1);">
+                  margin: 0 50px 0 100px;
+                  cursor: @(IsDisabledForAddAndUpdate ? "not-allowed" : "pointer");
+                  opacity: @(IsDisabledForAddAndUpdate ? "0.5" : "1");">
             </i>
 
             <i class="fas fa-trash-alt"
-               @onclick="() => { if (!IsDisabledForDelete) handleDelete(AlbumID); }"
+               @onclick="async () => { if (!IsDisabledForDelete) await handleDeleteAsync(AlbumID); }"
                style="font-size: 2em;
-                      margin: 0 150px 0 30px;
-                      cursor: @(IsDisabledForDelete ? "not-allowed" : "pointer");
-                      opacity: @(IsDisabledForDelete ? 0.5 : 1);">
+                  margin: 0 150px 0 30px;
+                  cursor: @(IsDisabledForDelete ? "not-allowed" : "pointer");
+                  opacity: @(IsDisabledForDelete ? "0.5" : "1");">
             </i>
         </div>
     }
@@ -92,11 +98,11 @@
     {
         <div style="align-items: center; color: black;">
             <i class="fas fa-save"
-               @onclick="() => { if (!IsDisabledForAddAndUpdate) handleAdd(Caption); }"
+               @onclick="async () => { if (!IsDisabledForAddAndUpdate) await handleAddAsync(Caption); }"
                style="font-size: 2em;
                       margin: 0 50px 0 100px;
                       cursor: @(IsDisabledForAddAndUpdate ? "not-allowed" : "pointer");
-                      opacity: @(IsDisabledForAddAndUpdate ? 0.5 : 1);">
+                      opacity: @(IsDisabledForAddAndUpdate ? "0.5" : "1");">
             </i>
         </div>
     }

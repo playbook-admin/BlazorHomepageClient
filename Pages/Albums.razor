@@ -7,17 +7,65 @@
 @inject NavigationManager Navigation
 @inject HttpClient Http
 @inject ISessionUserContext SessionUserContext
+@inject IGlobalStateContext GlobalStateContext
+
+           
+<div class="container">
+    <div class="row">
+        <div class="row-height col">
+            <div class="col-md-3 hidden-md hidden-sm hidden-xs col-md-height col-md-top custom-vertical-left-border custom-vertical-right-border grey-background">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4>Photo album</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 col-md-height">
+                <div class="row">
+                        <FontAwesomeIcon Icon="spinner"
+                                         Size="2x"
+                                         Spin="true"
+                                         Style="text-align:center"
+                                         Opacity="@opacity" />
+                    <table class="album-frame" style="font-size: 10px; font-family: verdana, arial, helvetica, sans-serif;">
+                        <tbody>
+                            @foreach (var row in GetAlbumRows())
+                            {
+                                <tr>
+                                    @for (int i = 0; i < row.Count; i++)
+                                    {
+                                        <AlbumFrame AlbumID="@(row[i].AlbumID)"
+                                                    PhotoCount="@(row[i].PhotoCount)"
+                                                    Caption="@(row[i].Caption)"
+                                                    IsPublic="@(row[i].IsPublic)"
+                                                    ItemCount="@i"
+                                                    IsAuthorized="IsAuthorized"
+                                                    OnDelete="HandleDelete"
+                                                    OnUpdate="(args) => HandleUpdate((args.AlbumID, args.NewCaption))"
+                                                    OnAdd="HandleAdd" />
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     private List<Album> albums = new List<Album>();
-    private bool showProgress = false;
     private bool IsAuthorized => SessionUserContext.State.IsAuthorized;
+    private bool loading => GlobalStateContext.State.Loading;
+    private string opacity => loading ? "1" : "0";
 
     protected override async Task OnInitializedAsync()
     {
-        showProgress = true;
+        GlobalStateContext.SetLoading(true);
         Navigation.NavigateTo("/albums");
-        showProgress = false;
+        GlobalStateContext.SetLoading(false);
     }
 
     protected override async Task OnParametersSetAsync()
@@ -32,7 +80,7 @@
 
     private async Task GetAlbumsWithPhotoCount(string url)
     {
-        showProgress = true;
+        GlobalStateContext.SetLoading(true);
         try
         {
             var response = await Http.GetFromJsonAsync<List<Album>>(url);
@@ -49,25 +97,25 @@
         }
         finally
         {
-            showProgress = false;
+            GlobalStateContext.SetLoading(false);
         }
     }
 
     private async Task HandleDelete(int albumId)
     {
-        showProgress = true;
+        GlobalStateContext.SetLoading(true);
         await Http.DeleteAsync($"/api/albums/delete/{albumId}");
         albums = albums.Where(album => album.AlbumID != albumId).ToList();
         if (IsAuthorized && NoEmptyAlbumsExist(albums))
         {
             albums.Add(new Album { AlbumID = 0, PhotoCount = 0, Caption = "", IsPublic = true });
         }
-        showProgress = false;
+        GlobalStateContext.SetLoading(false);
     }
 
     private async Task HandleUpdate((int albumId, string newCaption) args)
     {
-        showProgress = true;
+        GlobalStateContext.SetLoading(true);
         var content = new StringContent(JsonSerializer.Serialize(args.newCaption), Encoding.UTF8, "application/json");
         await Http.PutAsync($"/api/albums/update/{args.albumId}", content);
 
@@ -76,12 +124,12 @@
         {
             album.Caption = args.newCaption;
         }
-        showProgress = false;
+        GlobalStateContext.SetLoading(false);
     }
 
     private async Task HandleAdd(string caption)
     {
-        showProgress = true;
+        GlobalStateContext.SetLoading(true);
         var content = new StringContent(JsonSerializer.Serialize(caption), Encoding.UTF8, "application/json");
         var response = await Http.PostAsync("/api/albums/add", content);
         var newAlbum = await response.Content.ReadFromJsonAsync<Album>();
@@ -90,7 +138,7 @@
             albums = albums.Where(album => album.AlbumID != 0).ToList();
             albums.Add(newAlbum);
         }
-        showProgress = false;
+        GlobalStateContext.SetLoading(false);
     }
 
     private List<List<Album>> GetAlbumRows()
@@ -116,45 +164,4 @@
         public bool IsPublic { get; set; }
     }
 }
-           
-<div class="container">
-    <div class="row">
-        <div class="row-height">
-            <div class="col-md-3 hidden-md hidden-sm hidden-xs col-md-height col-md-top custom-vertical-left-border custom-vertical-right-border grey-background">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4>Photo album</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-9 col-md-height">
-                <div class="row">
-                    <div class="spinner">
-                        <table class="album-frame" style="font-size: 10px; font-family: verdana, arial, helvetica, sans-serif;">
-                            <tbody>
-                                @foreach (var row in GetAlbumRows())
-                                {
-                                    <tr>
-                                        @for (int i = 0; i < row.Count; i++)
-                                        {
-                                            <AlbumFrame AlbumID="@(row[i].AlbumID)"
-                                                        PhotoCount="@(row[i].PhotoCount)"
-                                                        Caption="@(row[i].Caption)"
-                                                        IsPublic="@(row[i].IsPublic)"
-                                                        ItemCount="@i"
-                                                        IsAuthorized="IsAuthorized"
-                                                        OnDelete="HandleDelete"
-                                                        OnUpdate="(args) => HandleUpdate((args.AlbumID, args.NewCaption))"
-                                                        OnAdd="HandleAdd" />
-                                        }
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 

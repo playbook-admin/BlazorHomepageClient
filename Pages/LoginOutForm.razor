@@ -15,7 +15,7 @@
                                        Type="password"
                                        Placeholder="Password"
                                        PreText="@captionText"
-                                       OnTextChanged="HandlePasswordChanged"
+                                       OnTextChanged="value => password = value"
                                        OnEnter="HandleLogInOut" />
                         }
                         else
@@ -25,26 +25,27 @@
             </div>
         </div>
     </Header>
-<Body>
-    <div class="modal-body">
-        <button class="btn btn-secondary" @onclick="HideModal">Cancel</button>
-       <button class="btn btn-primary" @onclick="HandleLogInOut">
-            @(isAuthorized ? "Log out" : "Log in")
-        </button>
-        <FontAwesomeIcon 
-            Icon="spinner" 
-            Size="2x" 
-            Spin="true" 
-            Style="@GetIconStyle()" />
-    </div>
-</Body>
-
+    <Body>
+        <div class="modal-body">
+            <button class="btn btn-secondary" @onclick="HideModal">Cancel</button>
+            <button class="btn btn-primary" @onclick="HandleLogInOut">
+                @(isAuthorized ? "Log out" : "Log in")
+            </button>
+            <FontAwesomeIcon 
+                Icon="spinner" 
+                Size="2x" 
+                Spin="true" 
+                Style=""
+                Opacity="@opacity" />
+        </div>
+    </Body>
 </Modal>
 
 @code {
     private bool isModalVisible = false;
     private bool isAuthorized => SessionUserContext.State.IsAuthorized;
     private bool loading => GlobalStateContext.State.Loading;
+    private string opacity => loading ? "1" : "0";
     private string password = string.Empty;
     private string captionText = "Log in";
 
@@ -53,11 +54,6 @@
         isModalVisible = true; // Show the modal when the component initializes
     }
 
-    private string GetIconStyle()
-    {
-        // Return style string based on conditions
-        return $"opacity: {(loading ? "1" : "0")};";
-    }
 
     private void ShowModal()
     {
@@ -67,11 +63,7 @@
     private void HideModal()
     {
         isModalVisible = false;
-    }
-
-    private void HandlePasswordChanged(string value)
-    {
-        password = value;
+        Navigation.NavigateTo("/albums");
     }
 
     private async Task HandleLogInOut()
@@ -80,7 +72,6 @@
         {
             await SessionUserContext.LogoutAsync();
             HideModal();
-            Navigation.NavigateTo("/albums");
         }
         else
         {
@@ -88,7 +79,6 @@
             if (response == "PasswordOk")
             {
                 HideModal();
-                Navigation.NavigateTo("/albums");
             }
             else
             {

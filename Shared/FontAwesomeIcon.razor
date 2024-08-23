@@ -2,8 +2,7 @@
 @using System.Globalization
 @inject IGlobalStateContext GlobalStateContext
 
-
-<i class="@IconClass" style="@Style"></i>
+<i class="@IconClass" style="@CombinedStyle"></i>
 
 @code {
     [Parameter]
@@ -16,10 +15,17 @@
     public bool Spin { get; set; }
 
     [Parameter]
-
     public string Style { get; set; } = string.Empty;
 
+    [Parameter]
+    public string Opacity { get; set; } = "1";  // Default to visible
+
+    [Parameter]
+    public bool Loading { get; set; }
+
     private string IconClass => BuildIconClass();
+
+    private string CombinedStyle => $"{Style}; opacity: {Opacity};";
 
     private string BuildIconClass()
     {

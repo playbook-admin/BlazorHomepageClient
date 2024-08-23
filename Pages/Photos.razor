@@ -7,17 +7,136 @@
 @inject IGlobalStateContext GlobalStateContext
 @inject HttpClient Http
 
+
+<div class="container">
+    <div class="row">
+        <div class="col row-height">
+            <div class="col-md-3 hidden-md hidden-sm hidden-xs col-md-height col-md-top custom-vertical-left-border custom-vertical-right-border grey-background">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 />
+                        <h4>@AlbumCaption</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 col-md-height">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="buttonbar buttonbar-top">
+                        <NavLink href="/albums">
+                            <img alt="Back to albums" src="/images/button-gallery.gif" />
+                        </NavLink>
+                    </div>
+                    <div class="row justify-content-md-center">
+                        <div class="col col-lg-6">
+                        </div>
+                        <div class="col-md-auto">
+                           <FontAwesomeIcon Icon="spinner"
+                                             Size="2x"
+                                             Spin="true"
+                                             Style=""
+                                             Opacity="@opacity" />
+                                                  
+                          </div>
+                    </div>
+                    <div class="col-md-12">
+                        <table class="view" style="border-collapse:collapse;">
+                            <tbody>
+                                @{
+                                    int photosPerRow = 5;
+                                    int totalRows = (int)Math.Ceiling((double)photos.Count / photosPerRow);
+                                }
+
+                                @for (int row = 0; row < totalRows; row++)
+                                {
+                                    <tr>
+                                        @for (int col = 0; col < photosPerRow; col++)
+                                        {
+                                            int index = row * photosPerRow + col;
+                                            if (index < photos.Count)
+                                            {
+                                                var photo = photos[index];
+                                                <td>
+                                                    @if (IsAuthorized)
+                                                    {
+                                                        <textarea @bind="captions[index]"></textarea>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@photo.Caption</div>
+                                                    }
+                                                    <PhotoFrame>
+                                                        <NavLink href="@($"/details/{photo.PhotoID}/{AlbumId}/{AlbumCaption}")">
+                                                            <img src="@($"{ApiAddress}/Handler/Index/PhotoID={photo.PhotoID}/Size=M")" alt="Photo" style="border: 4px solid white;" />
+                                                        </NavLink>
+                                                    </PhotoFrame>
+                                                    @if (IsAuthorized)
+                                                    {
+                                                        string opaq = loading && selectedIndex == index ? "1" : "0";
+                                                        <div>
+                                                            <button @onclick="() => ToggleDelete(index)">Delete</button>
+                                                            <button @onclick="() => HandleUpdate(index)">Update</button>
+                                                            <FontAwesomeIcon Icon="spinner"
+                                                                             Size="2x"
+                                                                             Spin="true"
+                                                                             Style=""
+                                                                             Opacity="@opaq" />
+
+                                                        </div>
+                                                    }
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    </tr>
+                                }
+
+                                @if (IsAuthorized)
+                                {
+                                    <tr>
+                                        <td>
+                                            <textarea @bind="PhotoCaption" placeholder="Enter caption"></textarea>
+                                            <PhotoFrame>
+                                                <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
+                                            </PhotoFrame>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @code {
     [Parameter] public int AlbumId { get; set; }
     [Parameter] public string AlbumCaption { get; set; } = string.Empty;
 
+    private const int PhotosPerRow = 5;
+    private int TotalRows => (int)Math.Ceiling((double)photos.Count / PhotosPerRow);
     private bool IsAuthorized => SessionUserContext.State.IsAuthorized;
     private string Token => SessionUserContext.State.Token;
 
     private List<Photo> photos = new();
     private string[] captions = Array.Empty<string>();
     private bool[] showDeleteConfirmationModals = Array.Empty<bool>();
-    private string status = "idle";
+    private bool loading => GlobalStateContext.State.Loading;
+    private string opacity => loading ? "1" : "0";
     private bool showProgress = false;
     private string PhotoCaption = string.Empty;
     private int selectedIndex = -1;
@@ -26,16 +145,16 @@
     protected override async Task OnInitializedAsync()
     {
         ApiAddress = GlobalStateContext.State.ApiAddress;
-        await LoadPhotos();
+        await LoadPhotosAsync();
     }
 
-    private async Task LoadPhotos()
+    private async Task LoadPhotosAsync()
     {
-        status = "loading";
+        GlobalStateContext.SetLoading(true);
         photos = await GetPhotosAsync(AlbumId);
         captions = photos.Select(p => p.Caption).ToArray();
         showDeleteConfirmationModals = new bool[photos.Count];
-        status = "idle";
+        GlobalStateContext.SetLoading(false);
     }
 
     private async Task<List<Photo>> GetPhotosAsync(int albumId)
@@ -119,18 +238,18 @@
 
     private async Task HandlePhotoAdded()
     {
-        await LoadPhotos();
+        await LoadPhotosAsync();
         PhotoCaption = string.Empty;
     }
 
     private async Task HandleDelete(int index)
     {
-        status = "loading";
+        GlobalStateContext.SetLoading(true);
         await DeletePhotoAsync(photos[index].PhotoID, Token);
         photos.RemoveAt(index);
         captions = photos.Select(p => p.Caption).ToArray();
         showDeleteConfirmationModals = new bool[photos.Count];
-        status = "idle";
+        GlobalStateContext.SetLoading(false);
     }
 
     private void ToggleDelete(int index)
@@ -141,115 +260,8 @@
     private async Task HandleUpdate(int index)
     {
         selectedIndex = index;
-        status = "loading";
+        GlobalStateContext.SetLoading(true);
         await UpdatePhotoCaptionAsync(photos[index].PhotoID, captions[index], Token);
-        status = "idle";
+        GlobalStateContext.SetLoading(false);
     }
 }
-
-<div class="container">
-    <div class="row">
-        <div class="col row-height">
-            <div class="col-md-3 hidden-md hidden-sm hidden-xs col-md-height col-md-top custom-vertical-left-border custom-vertical-right-border grey-background">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4 />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4 />
-                        <h4>@AlbumCaption</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-9 col-md-height">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4 />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="buttonbar buttonbar-top">
-                        <NavLink href='/albums'>
-                            <img alt="" src="/images/button-gallery.gif" />
-                        </NavLink>
-                    </div>
-                    <div class="row justify-content-md-center">
-                        <div class="col col-lg-6">
-                        </div>
-                        <div class="col-md-auto">
-                            @*                   <FontAwesomeIcon icon={faSpinner} size={'2x'} spin style={status === 'loading' ? { opacity: '1' } : { opacity: '0' }} /> *@
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <table class="view" style="border-collapse:collapse;">
-                            <tbody>
-                                @{
-                                    int photosPerRow = 5;
-                                    int totalRows = (int)Math.Ceiling((double)photos.Count / photosPerRow);
-                                }
-
-                                @for (int row = 0; row < totalRows; row++)
-                                {
-                                    <tr>
-                                        @for (int col = 0; col < photosPerRow; col++)
-                                        {
-                                            int index = row * photosPerRow + col;
-                                            if (index < photos.Count)
-                                            {
-                                                var photo = photos[index];
-                                                <td>
-                                                    @if (IsAuthorized)
-                                                    {
-                                                        <textarea @bind="captions[index]"></textarea>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div>@photo.Caption</div>
-                                                    }
-                                                    <PhotoFrame>
-                                                        <NavLink href="@($"/details/{photo.PhotoID}/{AlbumId}/{AlbumCaption}")">
-                                                            <img src="@($"{ApiAddress}/Handler/Index/PhotoID={photo.PhotoID}/Size=M")" alt="Photo" style="border: 4px solid white;" />
-                                                        </NavLink>
-                                                    </PhotoFrame>
-                                                    @if (IsAuthorized)
-                                                    {
-                                                        <div>
-                                                            <button @onclick="() => ToggleDelete(index)">Delete</button>
-                                                            <button @onclick="() => HandleUpdate(index)">Update</button>
-                                                            @if (status == "loading" && selectedIndex == index)
-                                                            {
-                                                                <span class="spinner"></span>
-                                                            }
-                                                        </div>
-                                                    }
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                break;
-                                            }
-                                        }
-                                    </tr>
-                                }
-
-                                @if (IsAuthorized)
-                                {
-                                    <tr>
-                                        <td>
-                                            <textarea @bind="PhotoCaption" placeholder="Enter caption"></textarea>
-                                            <PhotoFrame>
-                                                <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
-                                            </PhotoFrame>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

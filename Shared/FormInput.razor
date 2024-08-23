@@ -1,4 +1,19 @@
 ﻿@namespace BlazorClient.Shared
+
+
+<div>
+    <form @onsubmit="HandleSubmit" style="display:inline">
+        <label style="display:inline">
+            <strong>@PreText</strong>
+            <input type="@Type"
+                   style="text-align:center"
+                   value="@Text"
+                   placeholder="@Placeholder"
+                   @onchange="HandleChange" />
+        </label>
+    </form>
+</div>
+
 @code {
     [Parameter] public string Text { get; set; } = string.Empty;
     [Parameter] public string Type { get; set; } = "text";
@@ -26,16 +41,4 @@
     }
 }
 
-<div>
-    <form @onsubmit="HandleSubmit" style="display:inline">
-        <label style="display:inline">
-            <strong>@PreText</strong>
-            <input type="@Type"
-                   style="text-align:center"
-                   value="@Text"
-                   placeholder="@Placeholder"
-                   @onchange="HandleChange" />
-        </label>
-    </form>
-</div>
 

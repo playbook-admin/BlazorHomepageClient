@@ -1,8 +1,122 @@
-﻿@page "/file-upload"
-@namespace BlazorClient.Components
+﻿@namespace BlazorClient.Components
+@inject IJSRuntime JS
+
+<div id="dropZone" class="@(DropZoneClass)">
+    <strong class="text-center">Drag the file here...</strong>
+    <br />
+    <strong class="text-center">or use file picker!</strong>
+</div>
+
+<InputFile OnChange="HandleFileChange" />
+
+@if (ImagePreview != null)
+{
+    <div>
+        <br />
+        <button @onclick="HandleCancel">
+            <i class="fa fa-times fa-2x"></i>
+        </button>
+        @if (!string.IsNullOrWhiteSpace(Caption))
+        {
+            <button @onclick="HandleUpload">
+                <i class="fa fa-save fa-2x"></i>
+            </button>
+            <i class="fa fa-spinner fa-2x" style="opacity:@(IsLoading ? 1 : 0)" aria-hidden="true"></i>
+        }
+    </div>
+}
 
 @code {
-    [Parameter] public string AlbumId { get; set; }
+    private string DropZoneClass = "drag-drop-zone";
+    private string ImagePreview;
+    private IBrowserFile RawImage;
+    private bool IsLoading = false;
+
+    [Parameter] public int AlbumId { get; set; }
     [Parameter] public string Caption { get; set; }
-    [Parameter] public EventCallback<string> OnPhotoAdded { get; set; }  
+    [Parameter] public EventCallback<string> OnPhotoAdded { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("fileUpload.initializeDropZone", DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public void HandleDragEnter()
+    {
+        DropZoneClass = "drag-drop-zone inside-drag-area";
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void HandleDragOver()
+    {
+        DropZoneClass = "drag-drop-zone inside-drag-area";
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void HandleDragLeave()
+    {
+        DropZoneClass = "drag-drop-zone";
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task HandleDrop(string[] fileNames)
+    {
+        // Handle the dropped files, e.g., using InputFile for better file handling.
+        // Here, we're just showing the file names.
+        await JS.InvokeVoidAsync("alert", $"Files dropped: {string.Join(", ", fileNames)}");
+        DropZoneClass = "drag-drop-zone";
+        StateHasChanged();
+    }
+
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
+    {
+        RawImage = e.File;
+        var buffer = new byte[RawImage.Size];
+        await RawImage.OpenReadStream().ReadAsync(buffer);
+        ImagePreview = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+        StateHasChanged();
+    }
+
+    private async Task HandleUpload()
+    {
+        IsLoading = true;
+        var formData = new MultipartFormDataContent
+        {
+            { new StreamContent(RawImage.OpenReadStream()), "Image", RawImage.Name },
+            { new StringContent(AlbumId.ToString()), "AlbumId" },
+            { new StringContent(Caption), "Caption" }
+        };
+
+        try
+        {
+            // Call your API here
+            await OnPhotoAdded.InvokeAsync("Photo added!");
+        }
+        catch (Exception ex)
+        {
+            // Handle error
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+
+        RawImage = null;
+        ImagePreview = null;
+        StateHasChanged();
+    }
+
+    private void HandleCancel()
+    {
+        RawImage = null;
+        ImagePreview = null;
+        StateHasChanged();
+    }
 }

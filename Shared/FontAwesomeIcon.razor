@@ -2,7 +2,7 @@
 @using System.Globalization
 @inject IGlobalStateContext GlobalStateContext
 
-<i class="@IconClass" style="@CombinedStyle"></i>
+<i class="@IconClass" style="@CombinedStyle" @onclick="HandleClick"></i>
 
 @code {
     [Parameter]
@@ -21,11 +21,17 @@
     public string Opacity { get; set; } = "1";  // Default to visible
 
     [Parameter]
+    public string Cursor { get; set; } = "pointer";
+
+    [Parameter]
     public bool Loading { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
 
     private string IconClass => BuildIconClass();
 
-    private string CombinedStyle => $"{Style}; opacity: {Opacity};";
+    private string CombinedStyle => $"{Style}; opacity: {Opacity}; cursor: {Cursor}";
 
     private string BuildIconClass()
     {
@@ -43,5 +49,13 @@
             classes.Add($"fa-{Size}");
         }
         return string.Join(" ", classes);
+    }
+
+    private async Task HandleClick()
+    {
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync(null);
+        }
     }
 }

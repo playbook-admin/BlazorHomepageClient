@@ -1,0 +1,37 @@
+﻿@namespace BlazorClient.Components
+
+@inject NavigationManager Navigation
+
+<Modal IsVisible="@IsVisible" IsVisibleChanged="@((value) => IsVisible = value)">
+    <Header>
+        <div class="modal-header">
+            <div class="modal-title h4">Confirm deletion</div>
+            <button type="button" class="btn-close" @onclick="HideModal" aria-label="Close"></button>
+        </div>
+    </Header>
+    <Body>
+        <div class="modal-body">
+            <div class="alert alert-danger">@Message</div>
+        </div>
+    </Body>
+    <Footer>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" @onclick="HandleClose">Cancel</button>
+            <button class="btn btn-danger" @onclick="ConfirmModal">Delete</button>
+        </div>
+    </Footer>
+</Modal>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public string Message { get; set; }
+    [Parameter] public EventCallback ConfirmModal { get; set; }
+    [Parameter] public EventCallback HideModal { get; set; }
+
+    private void HandleClose()
+    {
+        HideModal.InvokeAsync(null);
+        IsVisibleChanged.InvokeAsync(false);
+    }
+}

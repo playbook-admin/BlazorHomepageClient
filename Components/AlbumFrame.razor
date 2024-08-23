@@ -79,21 +79,21 @@
     @if (IsUpdateOldAlbum)
     {
         <div style="display: flex; justify-content: center; align-items: center; color: black;">
-            <i class="fas fa-save"
-               @onclick="async () => { if (!IsDisabledForAddAndUpdate) await handleUpdateAsync(AlbumID, Caption); }"
-               style="font-size: 2em;
-                  margin: 0 50px 0 100px;
-                  cursor: @(IsDisabledForAddAndUpdate ? "not-allowed" : "pointer");
-                  opacity: @(IsDisabledForAddAndUpdate ? "0.5" : "1");">
-            </i>
+            <FontAwesomeIcon Icon="save"
+                             Size="2x"
+                             Spin="false"
+                             Style="margin: 0 50px 0 50px;"
+                             Opacity="@(IsDisabledForAddAndUpdate ? "0.5" : "1")"
+                             Cursor="@(IsDisabledForAddAndUpdate ? "not-allowed" : "pointer")"
+                             OnClick="async () => { if (!IsDisabledForAddAndUpdate) await handleUpdateAsync(AlbumID, Caption); }" />
 
-            <i class="fas fa-trash-alt"
-               @onclick="async () => { if (!IsDisabledForDelete) await handleDeleteAsync(AlbumID); }"
-               style="font-size: 2em;
-                  margin: 0 150px 0 30px;
-                  cursor: @(IsDisabledForDelete ? "not-allowed" : "pointer");
-                  opacity: @(IsDisabledForDelete ? "0.5" : "1");">
-            </i>
+            <FontAwesomeIcon Icon="trash"
+                             Size="2x"
+                             Spin="false"
+                             Style="margin: 0 150px 0 40px;"
+                             Opacity="@(IsDisabledForDelete ? "0.5" : "1")"
+                             Cursor="@(IsDisabledForDelete ? "not-allowed" : "pointer")"
+                             OnClick="async () => { if (!IsDisabledForDelete) await handleDeleteAsync(AlbumID); }" />
         </div>
     }
     else

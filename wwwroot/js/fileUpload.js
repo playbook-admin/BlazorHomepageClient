@@ -4,23 +4,29 @@
 
     dropZone.addEventListener('dragenter', function (e) {
       e.preventDefault();
+      console.log("dragenter")
       dotNetHelper.invokeMethodAsync('HandleDragEnter');
     });
 
     dropZone.addEventListener('dragover', function (e) {
       e.preventDefault();
+      console.log("dragover")
       dotNetHelper.invokeMethodAsync('HandleDragOver');
     });
 
     dropZone.addEventListener('dragleave', function (e) {
       e.preventDefault();
+      console.log("dragleave")
       dotNetHelper.invokeMethodAsync('HandleDragLeave');
     });
 
     dropZone.addEventListener('drop', function (e) {
       e.preventDefault();
+      console.log("drop")
       const files = e.dataTransfer.files;
-      dotNetHelper.invokeMethodAsync('HandleDrop', Array.from(files).map(f => f.name));
+      if (files.length > 0) {
+        dotNetHelper.invokeMethodAsync('HandleDrop', files[0].name);
+      }
     });
   }
 };

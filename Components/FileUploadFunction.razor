@@ -1,5 +1,6 @@
 ﻿@namespace BlazorClient.Components
 @inject IJSRuntime JS
+@inject IHttpClientFactory HttpClientFactory
 
 <div id="dropZone" class="@(DropZoneClass)">
     <strong class="text-center">Drag the file here...</strong>
@@ -12,6 +13,7 @@
 @if (ImagePreview != null)
 {
     <div>
+        <img src="@ImagePreview" alt="Image Preview" style="max-width: 100%; height: auto;" />
         <br />
         <button @onclick="HandleCancel">
             <i class="fa fa-times fa-2x"></i>
@@ -66,12 +68,15 @@
     }
 
     [JSInvokable]
-    public async Task HandleDrop(string[] fileNames)
+    public async Task HandleDrop(string fileName)
     {
-        // Handle the dropped files, e.g., using InputFile for better file handling.
-        // Here, we're just showing the file names.
-        await JS.InvokeVoidAsync("alert", $"Files dropped: {string.Join(", ", fileNames)}");
-        DropZoneClass = "drag-drop-zone";
+        // Handle the dropped file.
+        // Note: We cannot directly access the file from the drop event, so we may need a different approach
+        // Here we are assuming `fileName` is a placeholder
+        var file = await JS.InvokeAsync<IBrowserFile>("getFileByName", fileName);
+        var buffer = new byte[file.Size];
+        await file.OpenReadStream().ReadAsync(buffer);
+        ImagePreview = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
         StateHasChanged();
     }
 
@@ -96,12 +101,22 @@
 
         try
         {
-            // Call your API here
-            await OnPhotoAdded.InvokeAsync("Photo added!");
+            var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
+            var response = await httpClient.PostAsync("api/photos/add/", formData);
+            if (response.IsSuccessStatusCode)
+            {
+                await OnPhotoAdded.InvokeAsync("Photo added!");
+            }
+            else
+            {
+                // Handle the error response
+                await JS.InvokeVoidAsync("alert", "Failed to upload photo.");
+            }
         }
         catch (Exception ex)
         {
             // Handle error
+            await JS.InvokeVoidAsync("alert", $"Error: {ex.Message}");
         }
         finally
         {

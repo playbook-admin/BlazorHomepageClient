@@ -2,7 +2,7 @@
 
 @inject NavigationManager Navigation
 
-<Modal IsVisible="@IsVisible" IsVisibleChanged="@((value) => IsVisible = value)">
+<Modal ShowModal="@ShowModal" ShowModalChanged="@((value) => ShowModal = value)">
     <Header>
         <div class="modal-header">
             <div class="modal-title h4">Confirm deletion</div>
@@ -23,8 +23,8 @@
 </Modal>
 
 @code {
-    [Parameter] public bool IsVisible { get; set; }
-    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public bool ShowModal { get; set; }
+    [Parameter] public EventCallback<bool> ShowModalChanged { get; set; }
     [Parameter] public string Message { get; set; }
     [Parameter] public EventCallback ConfirmModal { get; set; }
     [Parameter] public EventCallback HideModal { get; set; }
@@ -32,6 +32,6 @@
     private void HandleClose()
     {
         HideModal.InvokeAsync(null);
-        IsVisibleChanged.InvokeAsync(false);
+        ShowModalChanged.InvokeAsync(false);
     }
 }

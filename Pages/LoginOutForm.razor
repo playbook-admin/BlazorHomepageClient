@@ -36,7 +36,7 @@
                 Size="2x" 
                 Spin="true" 
                 Style=""
-                Opacity="@opacity" />
+                Opacity="@(Loading ? "1" : "0")" />
         </div>
     </Body>
 </Modal>
@@ -44,8 +44,7 @@
 @code {
     private bool isModalVisible = false;
     private bool isAuthorized => SessionUserContext.State.IsAuthorized;
-    private bool loading => GlobalStateContext.State.Loading;
-    private string opacity => loading ? "1" : "0";
+    private bool Loading => GlobalStateContext.State.Loading;
     private string password = string.Empty;
     private string captionText = "Log in";
 

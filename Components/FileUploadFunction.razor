@@ -1,137 +1,184 @@
-﻿@namespace BlazorClient.Components
-@inject IJSRuntime JS
+﻿@page "/file-upload"
+@inject IJSRuntime JsRuntime
 @inject IHttpClientFactory HttpClientFactory
+@inject IGlobalStateContext GlobalStateContext
+@using System.Net.Http.Headers
 
-<div id="dropZone" class="@(DropZoneClass)">
-    <strong class="text-center">Drag the file here...</strong>
-    <br />
-    <strong class="text-center">or use file picker!</strong>
+<div id="DropZone" class="@GetDropZoneClass()">
+    <label for="UploadButton">
+        @if (ImagePreview != string.Empty)
+        {
+            <img src="@ImagePreview" alt="Preview" />
+        }
+        else
+        {
+            <strong class="text-center">Drag the file here...</strong>
+            <br />
+            <strong class="text-center">or use file picker!</strong>
+        }
+    </label>
+    <input type="file" id="UploadButton" style="display: none;" @onchange="TriggerFileInput" />
+
+    @if (ImagePreview != string.Empty)
+    {
+        <div>
+            <br />
+            <button @onclick="HandleCancel">
+                <FontAwesomeIcon Icon="times" Size="2x" />
+            </button>
+            @if (!string.IsNullOrEmpty(Caption))
+            {
+                <button @onclick="HandleUpload">
+                    <FontAwesomeIcon Icon="save" Size="2x" />
+                </button>
+                <FontAwesomeIcon Icon="spinner"
+                                 Size="2x"
+                                 Spin="true"
+                                 Style=""
+                                 Opacity="@(Loading ? "1" : "0")" />
+            }
+        </div>
+    }
 </div>
 
-<InputFile OnChange="HandleFileChange" />
-
-@if (ImagePreview != null)
-{
-    <div>
-        <img src="@ImagePreview" alt="Image Preview" style="max-width: 100%; height: auto;" />
-        <br />
-        <button @onclick="HandleCancel">
-            <i class="fa fa-times fa-2x"></i>
-        </button>
-        @if (!string.IsNullOrWhiteSpace(Caption))
-        {
-            <button @onclick="HandleUpload">
-                <i class="fa fa-save fa-2x"></i>
-            </button>
-            <i class="fa fa-spinner fa-2x" style="opacity:@(IsLoading ? 1 : 0)" aria-hidden="true"></i>
-        }
-    </div>
-}
-
 @code {
-    private string DropZoneClass = "drag-drop-zone";
-    private string ImagePreview;
-    private IBrowserFile RawImage;
-    private bool IsLoading = false;
-
     [Parameter] public int AlbumId { get; set; }
-    [Parameter] public string Caption { get; set; }
-    [Parameter] public EventCallback<string> OnPhotoAdded { get; set; }
+    [Parameter] public string Caption { get; set; } = string.Empty;
+    [Parameter] public Func<string, Task> OnPhotoAdded { get; set; }
+
+    private bool Loading => GlobalStateContext.State.Loading;
+    private string ImagePreview { get; set; } = string.Empty;
+    private string ImageRawBase64 { get; set; } = string.Empty;
+    private string FileName { get; set; } = string.Empty;
+    private string FileType { get; set; } = string.Empty;
+    private long FileSize { get; set; } = 0;
+    private DropState CurrentDropState { get; set; } = new DropState();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("fileUpload.initializeDropZone", DotNetObjectReference.Create(this));
+            var dotNetRef = DotNetObjectReference.Create(this);
+            await JsRuntime.InvokeVoidAsync("setupDragAndDrop", dotNetRef, "DropZone");
         }
     }
 
-    [JSInvokable]
-    public void HandleDragEnter()
+    private async Task TriggerFileInput()
     {
-        DropZoneClass = "drag-drop-zone inside-drag-area";
-        StateHasChanged();
+        var dotNetRef = DotNetObjectReference.Create(this);
+        await JsRuntime.InvokeVoidAsync("handleFileInputChange", dotNetRef, "UploadButton");
     }
 
     [JSInvokable]
-    public void HandleDragOver()
+    public void ReceiveFileData(FileData fileData)
     {
-        DropZoneClass = "drag-drop-zone inside-drag-area";
+        ImagePreview = $"data:{fileData.Type};base64,{fileData.Content}";
+        ImageRawBase64 = fileData.Content;
+        FileName = fileData.Name;
+        FileType = fileData.Type;
+        FileSize = fileData.Size;
         StateHasChanged();
     }
 
-    [JSInvokable]
-    public void HandleDragLeave()
-    {
-        DropZoneClass = "drag-drop-zone";
-        StateHasChanged();
-    }
 
-    [JSInvokable]
-    public async Task HandleDrop(string fileName)
+    private string GetDropZoneClass()
     {
-        // Handle the dropped file.
-        // Note: We cannot directly access the file from the drop event, so we may need a different approach
-        // Here we are assuming `fileName` is a placeholder
-        var file = await JS.InvokeAsync<IBrowserFile>("getFileByName", fileName);
-        var buffer = new byte[file.Size];
-        await file.OpenReadStream().ReadAsync(buffer);
-        ImagePreview = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
-        StateHasChanged();
-    }
-
-    private async Task HandleFileChange(InputFileChangeEventArgs e)
-    {
-        RawImage = e.File;
-        var buffer = new byte[RawImage.Size];
-        await RawImage.OpenReadStream().ReadAsync(buffer);
-        ImagePreview = $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
-        StateHasChanged();
+        return CurrentDropState.InDropZone ? "drag-drop-zone inside-drag-area" : "drag-drop-zone";
     }
 
     private async Task HandleUpload()
     {
-        IsLoading = true;
-        var formData = new MultipartFormDataContent
-        {
-            { new StreamContent(RawImage.OpenReadStream()), "Image", RawImage.Name },
-            { new StringContent(AlbumId.ToString()), "AlbumId" },
-            { new StringContent(Caption), "Caption" }
-        };
+        GlobalStateContext.SetLoading(true);
+        var formData = new MultipartFormDataContent();
+        var fileContent = new ByteArrayContent(Convert.FromBase64String(ImageRawBase64));
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(FileType);
+        formData.Add(fileContent, "Image", FileName);
+        formData.Add(new StringContent(AlbumId.ToString()), "AlbumId");
+        formData.Add(new StringContent(Caption), "Caption");
 
         try
         {
             var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
             var response = await httpClient.PostAsync("api/photos/add/", formData);
-            if (response.IsSuccessStatusCode)
-            {
-                await OnPhotoAdded.InvokeAsync("Photo added!");
-            }
-            else
-            {
-                // Handle the error response
-                await JS.InvokeVoidAsync("alert", "Failed to upload photo.");
-            }
+            response.EnsureSuccessStatusCode();
+            var responseBody = await response.Content.ReadAsStringAsync();
+            await OnPhotoAdded(responseBody);
+            ResetFields();
         }
         catch (Exception ex)
         {
-            // Handle error
-            await JS.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+            Console.Error.WriteLine($"Error connecting to server: {ex.Message}");
+            GlobalStateContext.SetLoading(false);
         }
-        finally
-        {
-            IsLoading = false;
-        }
-
-        RawImage = null;
-        ImagePreview = null;
-        StateHasChanged();
     }
 
     private void HandleCancel()
     {
-        RawImage = null;
-        ImagePreview = null;
+        ResetFields();
+    }
+
+    private void ResetFields()
+    {
+        ImagePreview = string.Empty;
+        ImageRawBase64 = string.Empty;
+        FileName = string.Empty;
+        FileType = string.Empty;
+        FileSize = 0;
         StateHasChanged();
+        GlobalStateContext.SetLoading(false);
+    }
+
+    private void HandleDragEnter()
+    {
+        CurrentDropState.DropDepth++;
+        StateHasChanged();
+    }
+
+    private void HandleDragLeave()
+    {
+        CurrentDropState.DropDepth--;
+        if (CurrentDropState.DropDepth == 0)
+        {
+            CurrentDropState.InDropZone = false;
+        }
+        StateHasChanged();
+    }
+
+    private void HandleDragOver()
+    {
+        CurrentDropState.InDropZone = true;
+        StateHasChanged();
+    }
+
+
+    [JSInvokable]
+    public void ProcessDroppedFiles(List<FileData> files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            ImagePreview = $"data:{file.Type};base64,{file.Content}";
+            ImageRawBase64 = file.Content;
+            FileName = file.Name;
+            FileType = file.Type;
+            FileSize = file.Size;
+            StateHasChanged();
+        }
+    }
+
+
+    public class FileData
+    {
+        public string Name { get; set; } = string.Empty;
+        public long Size { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty; // Base64 encoded file content
+    }
+
+    private class DropState
+    {
+        public int DropDepth { get; set; } = 0;
+        public bool InDropZone { get; set; } = false;
+        public List<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
     }
 }

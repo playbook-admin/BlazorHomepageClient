@@ -4,6 +4,7 @@
 @using BlazorClient.Components
 @using System.Text.Json
 @using System.Text
+@using BlazorHomepageClient.Components
 @inject NavigationManager Navigation
 @inject ISessionUserContext SessionUserContext
 @inject IGlobalStateContext GlobalStateContext
@@ -265,9 +266,10 @@
         }
     }
 
-    private async Task HandlePhotoAdded()
+    private async Task HandlePhotoAdded(string photoInfo)
     {
         await LoadPhotosAsync();
+        StateHasChanged();
         PhotoCaption = string.Empty;
     }
 

@@ -130,7 +130,7 @@
                                             <TextAreaInput Placeholder="Enter caption"
                                                            Text="@PhotoCaption"
                                                            OnTextChanged="(value) => PhotoCaption=value" />
-                                            <PhotoFrame>
+                                            <PhotoFrame DefaultImage="true">
                                                 <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
                                             </PhotoFrame>
                                         </td>

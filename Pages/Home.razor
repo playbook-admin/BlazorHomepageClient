@@ -14,12 +14,14 @@
     private string apiAddress = string.Empty;
     private long currentTicks;
     private string imageUrl = string.Empty;
+    private string detailsUrl = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         apiAddress = GlobalStateContext.State.ApiAddress;
         currentTicks = DateTime.Now.Ticks;
         imageUrl = $"{apiAddress}/Handler/Index/PhotoID=0/Size=M?{currentTicks}";
+        detailsUrl = $"/details/0/0/-{currentTicks}";
 
         try
         {
@@ -67,11 +69,11 @@
                           <div class="rotate-animation">
                             <div class="scale-animation">
                                <PhotoFrame>
-                                   <a href="@imageUrl">
+                                   <NavLink href="@detailsUrl">
                                        <img src="@imageUrl"
                                             alt="Animated Image"
                                             style="border: 4px solid white; max-height: 100%; max-width: 100%; vertical-align: middle;" />
-                                   </a>
+                                   </NavLink>
                                </PhotoFrame>
                             </div>
                           </div>

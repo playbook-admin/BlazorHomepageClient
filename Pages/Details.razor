@@ -28,7 +28,7 @@
         }
         else
         {
-            await FetchPhotos(CurrentPhotoId);
+            await FetchPhotosByAlbumId(AlbumId);
         }
 
         NumberElements = GenerateNumberElements();
@@ -69,13 +69,12 @@
         return elements;
     }
 
-    private async Task FetchPhotos(int photoId)
+    private async Task FetchPhotosByAlbumId(int albumId)
     {
         try
         {
             var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
-            Photos = await httpClient.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
-            CurrentPhotoId = photoId;
+            Photos = await httpClient.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{albumId}");
         }
         catch (Exception ex)
         {
@@ -88,7 +87,8 @@
         try
         {
             var httpClient = HttpClientFactory.CreateClient("MyHttpClient");
-            CurrentPhotoId = await httpClient.GetFromJsonAsync<int>($"{ApiAddress}/api/details/random");
+            PhotoId = await httpClient.GetFromJsonAsync<int>($"{ApiAddress}/api/details/random");
+            AlbumId = await httpClient.GetFromJsonAsync<int>($"{ApiAddress}/api/details/albumid/{PhotoId}");
             Photos = await httpClient.GetFromJsonAsync<List<Photo>>($"{ApiAddress}/api/details/{AlbumId}");
         }
         catch (Exception ex)

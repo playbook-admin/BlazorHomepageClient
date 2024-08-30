@@ -104,7 +104,7 @@
 
     private void SetDetails(int photoId)
     {
-        Navigation.NavigateTo($"/details/{photoId}/{AlbumId}/{AlbumCaption}");
+        Navigation.NavigateTo(GetDetailsUrl(photoId));
         CurrentPhotoId = photoId;
     }
 

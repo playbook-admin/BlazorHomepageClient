@@ -11,6 +11,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="wwwroot\images\Hamburger.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Include="wwwroot\css\dragAndDrop.css" />
 	</ItemGroup>
 

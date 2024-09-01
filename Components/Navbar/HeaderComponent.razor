@@ -7,16 +7,16 @@
         <a class="navbar-brand pb-5 mb-3" href="/">
             <BlazorSvgIcon Text="Blazor home page" Icon="/images/info.png" IconClass="logo" />
         </a>
-        <button class="navbar-toggler" type="button">
+        <button class="navbar-toggler" type="button" @onclick="ToggleSidebar">
             <span class="navbar-toggler-icon"><img src="/images/hamburger.png" alt="Hamburger Icon" /></span>
         </button>
         <div class="collapse navbar-collapse navbar-nav-container">
             <ul class="navbar-nav navbar-nav-main spriteTabs">
                 <li class="nav-item">
-                    <NavLink href="/" class="nav-link no-underline" Match="NavLinkMatch.All" @onclick="closeSidebar">Home<span /></NavLink>
+                    <NavLink href="/" class="nav-link no-underline" Match="NavLinkMatch.All" @onclick="CloseSidebar">Home<span /></NavLink>
                 </li>
                 <li class="nav-item">
-                    <NavLink href="/albums" class="nav-link no-underline" Match="NavLinkMatch.All" @onclick="closeSidebar">Album<span /></NavLink>
+                    <NavLink href="/albums" class="nav-link no-underline" Match="NavLinkMatch.All" @onclick="CloseSidebar">Album<span /></NavLink>
                 </li>
             </ul>
             <ul class="navbar-nav navbar-nav-right spriteTabs">
@@ -37,16 +37,18 @@
 
 <div class="sidebar @(sidebarOpen ? "open" : "")">
     <div class="sidebar-header">
-        <a href="@mapUrl" target="_blank" rel="noopener noreferrer" class="nav-link no-underline"><span></span>&nbsp;&nbsp;<i class="fas fa-map-marker-alt"></i><span></span></a>
-        <NavLink href="/loginoutform" class="nav-link" @onclick="closeSidebar"><i class="fas fa-user"></i></NavLink>
+        <a href="@mapUrl" target="_blank" rel="noopener noreferrer" class="nav-link no-underline">
+            <span></span>&nbsp;&nbsp;<i class="fas fa-map-marker-alt"></i><span></span>
+        </a>
+        <NavLink href="/loginoutform" class="nav-link" @onclick="CloseSidebar"><i class="fas fa-user"></i></NavLink>
     </div>
     <div class="nav-list">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <NavLink href="/" class="nav-link" @onclick="closeSidebar">Home</NavLink>
+                <NavLink href="/" class="nav-link" @onclick="CloseSidebar">Home</NavLink>
             </li>
             <li class="nav-item">
-                <NavLink href="/albums" class="nav-link" @onclick="closeSidebar">Album</NavLink>
+                <NavLink href="/albums" class="nav-link" @onclick="CloseSidebar">Album</NavLink>
             </li>
         </ul>
     </div>
@@ -65,10 +67,23 @@
         headerStyle = await JSRuntime.InvokeAsync<string>("getDynamicStyle", spriteType);
     }
 
-    private void closeSidebar()
+    private void ToggleSidebar()
     {
-        // Logic to close the sidebar
+        sidebarOpen = !sidebarOpen;
+
+        if (sidebarOpen)
+        {
+            JSRuntime.InvokeVoidAsync("document.getElementById('main-content').classList.add", "content-blur");
+        }
+        else
+        {
+            JSRuntime.InvokeVoidAsync("document.getElementById('main-content').classList.remove", "content-blur");
+        }
+    }
+
+    private void CloseSidebar()
+    {
         sidebarOpen = false;
+        JSRuntime.InvokeVoidAsync("document.getElementById('main-content').classList.remove", "content-blur");
     }
 }
-

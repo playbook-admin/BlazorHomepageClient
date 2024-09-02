@@ -2,24 +2,29 @@
 
 @inject NavigationManager Navigation
 
-<Modal ShowModal="@ShowModal" ShowModalChanged="@((value) => ShowModal = value)">
-    <Header>
-        <div class="modal-header">
-            <div class="modal-title">Confirm deletion</div>
+<div class="modal-container">
+    @if (ShowModal)
+    {
+        <!-- Modal Overlay -->
+        <div class="modal-overlay"></div>
+
+        <!-- Modal Dialog -->
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Confirm deletion</div>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">@Message</div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="HandleClose">Cancel</button>
+                    <button class="btn btn-danger" @onclick="ConfirmModal">Delete</button>
+                </div>
+            </div>
         </div>
-    </Header>
-    <Body>
-        <div class="modal-body">
-            <div class="alert alert-danger">@Message</div>
-        </div>
-    </Body>
-    <Footer>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" @onclick="HandleClose">Cancel</button>
-            <button class="btn btn-danger" @onclick="ConfirmModal">Delete</button>
-        </div>
-    </Footer>
-</Modal>
+    }
+</div>
 
 @code {
     [Parameter] public bool ShowModal { get; set; }
@@ -28,9 +33,32 @@
     [Parameter] public EventCallback ConfirmModal { get; set; }
     [Parameter] public EventCallback HideModal { get; set; }
 
-    private void HandleClose()
+    private async Task HandleClose()
     {
-        HideModal.InvokeAsync(null);
-        ShowModalChanged.InvokeAsync(false);
+        await HideModal.InvokeAsync(null);
+        await ShowModalChanged.InvokeAsync(false);
     }
 }
+
+<style scoped>
+    .modal-container {
+        position: relative; /* Positioning context for absolute positioning of the modal */
+    }
+
+    .modal-overlay {
+        position: fixed; /* Fixed to cover the entire viewport */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100; /* Ensure it covers other content */
+    }
+
+    .modal-dialog {
+        position: fixed; /* Fixed to position it relative to the viewport */
+        transform: translate(-50%, -50%); /* Centering transform */
+        z-index: 101; /* Ensure it is above the overlay */
+        width: auto;
+        max-width: 90%;
+    }
+</style>

@@ -4,7 +4,7 @@
 @using BlazorClient.Components
 @using System.Text.Json
 @using System.Text
-@using BlazorHomepageClient.Components
+
 @inject NavigationManager Navigation
 @inject ISessionUserContext SessionUserContext
 @inject IGlobalStateContext GlobalStateContext
@@ -68,6 +68,18 @@
                                             if (index < PhotoList.Count)
                                             {
                                                 var photo = PhotoList[index];
+                                                if (photo.PhotoID==0)
+                                                {
+                                                    <td>
+                                                        <TextAreaInput Placeholder="Enter caption"
+                                                                       Text="@PhotoCaption"
+                                                                       OnTextChanged="(value) => PhotoCaption=value" />
+                                                        <PhotoFrame DefaultImage="true">
+                                                            <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
+                                                        </PhotoFrame>
+                                                    </td>
+                                                    
+                                                } else {
                                                 <td>
                                                     @if (IsAuthorized)
                                                     {
@@ -115,26 +127,13 @@
                                                         </div>
                                                     }
                                                 </td>
+                                                }
                                             }
                                             else
                                             {
                                                 break;
                                             }
                                         }
-                                    </tr>
-                                }
-
-                                @if (IsAuthorized)
-                                {
-                                    <tr>
-                                        <td>
-                                            <TextAreaInput Placeholder="Enter caption"
-                                                           Text="@PhotoCaption"
-                                                           OnTextChanged="(value) => PhotoCaption=value" />
-                                            <PhotoFrame DefaultImage="true">
-                                                <FileUploadFunction AlbumID="@AlbumId" Caption="@PhotoCaption" OnPhotoAdded="HandlePhotoAdded" />
-                                            </PhotoFrame>
-                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -173,9 +172,25 @@
     {
         GlobalStateContext.SetLoading(true);
         PhotoList = await GetPhotosAsync(AlbumId);
+        if (IsAuthorized)
+        {
+            PhotoList = AddDefaultImage(PhotoList);
+        }
         Captions = PhotoList.Select(p => p.Caption).ToArray();
         ShowDeleteConfirmationModals = new bool[PhotoList.Count];
         GlobalStateContext.SetLoading(false);
+    }
+
+    private List<Photo> AddDefaultImage(List<Photo> photoList)
+    {
+        var emptyImage = new Photo
+            {
+                AlbumID = AlbumId,
+                PhotoID = 0,
+                Caption = string.Empty
+            };
+        photoList.Add(emptyImage);
+        return photoList;
     }
 
     private async Task<List<Photo>> GetPhotosAsync(int albumId)
